@@ -3,349 +3,266 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ラヴィPG 指名フローチャート（デモ／ブランド調整・反映版）</title>
-  <meta name="format-detection" content="telephone=no">
+  <title>PG指名フローチャート（京都店）</title>
   <style>
-    /* ===============================
-       ブランド調整：色・余白・フォント
-       =============================== */
-    :root{
-      --bg:#ffffff;          /* 背景 */
-      --fg:#161616;          /* 文字(濃) */
-      --fg-2:#5a5a5a;        /* 文字(淡) */
-      --line:#e6e6e6;        /* 枠線 */
-      --accent:#C9A56C;      /* アクセント(ゴールド系) */
-      --accent-dark:#B28F57; /* アクセント濃 */
-      --btn-text:#ffffff;    /* ボタン文字 */
-      --chip-bg:#f8f5ef;     /* 淡いベージュ背景 */
-      --radius:14px;         /* 角丸 */
-      --gap:14px;            /* コンポーネント間隔 */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 
+                   "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo", sans-serif;
+      margin: 0;
+      background: #ffffff;
+      color: #222;
     }
 
-    html, body {
-      margin:0; padding:0; background:var(--bg); color:var(--fg);
-      font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Meiryo",
-                   system-ui, -apple-system, "Segoe UI", sans-serif;
-      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
     }
 
-    .wrap { max-width: 880px; margin: 0 auto; padding: 20px 18px 24px; }
-    header { margin: 6px 0 18px; }
-    h1 { margin:0 0 6px; font-size: 22px; letter-spacing: .02em; font-weight: 600; }
-    .sub { margin:0; color:var(--fg-2); font-size: 14px; }
-
-    /* カード */
-    .card, #result {
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,.02);
+    h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
     }
-    .hidden { display:none; }
 
-    h2 { margin: 0 0 12px; font-size: 18px; letter-spacing: .02em; font-weight: 600; }
+    .sub {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 24px;
+    }
 
-    /* 選択肢ボタン（2カラム） */
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .question {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
     .choices {
-      display:grid; grid-template-columns: 1fr 1fr; gap: var(--gap);
-      margin: 10px 0 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
-    button.choice{
-      -webkit-tap-highlight-color: transparent;
-      padding: 14px 12px; font-size: 16px; border-radius: var(--radius);
-      border:1px solid var(--line); background: var(--chip-bg); color: var(--fg);
-      cursor:pointer; text-align:center; transition: all .15s ease;
+
+    button.choice {
+      padding: 14px 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 15px;
     }
-    button.choice:hover{ border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201,165,108,.12); }
-    button.choice:active{ transform: translateY(1px); }
 
-    .progress { text-align:right; color:var(--fg-2); font-size: 12px; margin-top: 4px; }
+    button.choice:hover {
+      border-color: #999;
+    }
 
-    /* 結果リスト */
-    .pg-list { display:grid; gap: var(--gap); margin-top: 8px; }
+    .hidden {
+      display: none;
+    }
+
+    .result-title {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .result-sub {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .pg-list {
+      display: grid;
+      gap: 12px;
+    }
+
     .pg {
-      display:flex; align-items:center; justify-content:space-between; gap: 12px;
-      border:1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background:#fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 14px;
     }
-    .pg h3 { margin:0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: .02em; }
-    .comment { margin:0; color: var(--fg-2); font-size: 14px; line-height: 1.6; white-space: pre-line; }
 
-    /* ボタン */
-    .btn {
-      display:inline-block; text-decoration:none; text-align:center; cursor:pointer;
-      padding: 13px 14px; min-width: 160px;
-      border-radius: var(--radius);
-      background: var(--accent); color: var(--btn-text); border:1px solid var(--accent);
-      font-size: 15px; font-weight: 600; letter-spacing: .02em;
-      transition: background .15s ease, border-color .15s ease, transform .05s ease;
+    .pg-name {
+      font-weight: bold;
+      margin-bottom: 6px;
     }
-    .btn:hover{ background: var(--accent-dark); border-color: var(--accent-dark); }
-    .btn:active{ transform: translateY(1px); }
 
-    .ghost {
-      margin-top: 10px; background:#fff; color:var(--fg); border:1px solid var(--line);
-      padding: 12px 12px; border-radius: var(--radius); cursor:pointer;
-      transition: border-color .15s ease;
+    .tags {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
     }
-    .ghost:hover{ border-color: var(--accent); }
 
-    /* URLの補助リンク（見せすぎない） */
-    .url-line { margin-top:6px; font-size: 12px; }
-    .url-line a { color: var(--accent-dark); text-decoration: underline; word-break: break-all; }
+    .tags span {
+      margin-right: 6px;
+    }
 
-    footer { color:var(--fg-2); text-align:right; font-size:12px; margin-top: 12px; }
+    .pg a {
+      font-size: 13px;
+      color: #444;
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>PG指名フローチャート（デモ）</h1>
-      <p class="sub">4つの質問に答えると、おすすめPGを表示します。</p>
-    </header>
+<div class="wrap">
+  <h1>PG指名フローチャート（京都店）</h1>
+  <div class="sub">5つの質問で、あなたに合うPGをご提案します</div>
 
-    <section id="card" class="card"><!-- JSで上書き --></section>
+  <!-- 質問表示エリア -->
+  <div id="card" class="card"></div>
 
-    <section id="result" class="hidden">
-      <h2>おすすめのPG</h2>
-      <div id="pgList" class="pg-list"></div>
-      <button id="restart" class="ghost" type="button">最初からやり直す</button>
-    </section>
+  <!-- 結果表示エリア -->
+  <div id="result" class="hidden"></div>
 
-    <footer>
-      <small>※デモ用：結果画面から公式サイトの作品ページへ遷移します</small>
-    </footer>
-  </div>
+  <footer>
+    ※最終の結果画面から公式サイトの作品ページへ遷移します
+  </footer>
+</div>
 
-  <script>
-    /* ====== 設定 ====== */
-    var DEFAULT_PORTFOLIO_URL = "https://www.la-viephoto.com/photo_g/kobe";
+<script>
+const PG_URL = "https://www.la-viephoto.com/photo_g/kyoto";
 
-    /* ====== データ（内蔵：分岐＋PG情報）====== */
-    var DATA = {
-      "nodes": [
-        { "id": "q1", "question": "好きな写真の雰囲気は？", "progress": "1 / 4",
-          "choices": [
-            { "label": "スタイリッシュ", "next": "q2_stylish" },
-            { "label": "ナチュラル",     "next": "q2_natural" }
-          ]
-        },
-        { "id": "q2_stylish", "question": "どんな人に撮ってもらいたい？", "progress": "2 / 4",
-          "choices": [
-            { "label": "楽しい",  "next": "q3_stylish_fun" },
-            { "label": "寄り添い","next": "q3_stylish_yorisoi" }
-          ]
-        },
-        { "id": "q2_natural", "question": "どんな人に撮ってもらいたい？", "progress": "2 / 4",
-          "choices": [
-            { "label": "楽しい",  "next": "q3_natural_fun" },
-            { "label": "寄り添い","next": "q3_natural_yorisoi" }
-          ]
-        },
+const results = {
+  A: {
+    title: "ゲストみんなとの一体感",
+    sub: "笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
+    photographers: [
+      { name: "Kenji", tags: ["#アーティスティック","#モード","#フレンドリー","#ハートフル"] },
+      { name: "yumico", tags: ["#ハッピー","#ドキュメンタリー","#フレンドリー","#アットホーム"] },
+      { name: "HARUKI", tags: ["#しっとり","#フレンドリー","#大人っぽさ","#アットホーム"] },
+      { name: "Hibino", tags: ["#ハートフル","#おしゃれ","#ハッピー","#エモーショナル"] }
+    ]
+  },
+  B: {
+    title: "自然体なふたりらしさを重視",
+    sub: "無理せず、いつもの自分たちで過ごせるPGタイプ",
+    photographers: [
+      { name: "akane", tags: ["#自然体","#いつものふたり","#笑顔","#安心感"] },
+      { name: "unio", tags: ["#王道","#ナチュラル","#ポージング","#フレンドリー"] },
+      { name: "Kacchan", tags: ["#温かさ","#空気感","#ふたりらしさ","#寄り添う"] },
+      { name: "tsukasa", tags: ["#フレンドリー","#ポージング","#シャープ","#鮮やかさ"] }
+    ]
+  },
+  C: {
+    title: "独自の世界観に導いてくれる",
+    sub: "特別な一日を“作品”として残したいあなたへ",
+    photographers: [
+      { name: "shinomiya", tags: ["#エモーショナル","#おしゃれ","#空気感","#しっとり"] },
+      { name: "TAIHEI", tags: ["#モード","#シック","#大人っぽい","#非日常"] },
+      { name: "naoya", tags: ["#大人っぽい","#しっとり","#美しさ","#フレンドリー"] },
+      { name: "toro", tags: ["#きれいめ","#ポージング","#繊細な光","#親しみやすさ"] }
+    ]
+  },
+  D: {
+    title: "寄り添い、安心感で包み込む",
+    sub: "緊張せず、穏やかに過ごしたいあなたへ",
+    photographers: [
+      { name: "TATSUYA", tags: ["#穏やか","#ポージング","#透明感","#安心感"] },
+      { name: "KIZ", tags: ["#作品性","#美しい構図","#落ち着く","#安心感"] },
+      { name: "imani", tags: ["#やわらかさ","#あたたかさ","#ふんわり","#穏やか"] }
+    ]
+  }
+};
 
-        /* スタイリッシュ × 楽しい */
-        { "id": "q3_stylish_fun", "question": "好きな色味は？", "progress": "3 / 4",
-          "choices": [
-            { "label": "オシャレ＆かっこいい", "next": "q4_gender_stylish_fun" },
-            { "label": "上品で洗練されている", "results": ["tatsuki"] }
-          ]
-        },
-        { "id": "q4_gender_stylish_fun", "question": "フォトグラファーの性別は？", "progress": "4 / 4",
-          "choices": [
-            { "label": "MAN",   "results": ["taihei", "kenji"] },
-            { "label": "WOMAN", "results": ["shiori"] }
-          ]
-        },
+const flow = {
+  start() {
+    this.step1();
+  },
 
-        /* スタイリッシュ × 寄り添い */
-        { "id": "q3_stylish_yorisoi", "question": "好きな色味は？", "progress": "3 / 4",
-          "choices": [
-            { "label": "オシャレ＆かっこいい", "next": "q4_gender_stylish_yorisoi" },
-            { "label": "上品で洗練されている", "results": ["Rio"] }
-          ]
-        },
-        { "id": "q4_gender_stylish_yorisoi", "question": "フォトグラファーの性別は？", "progress": "4 / 4",
-          "choices": [
-            { "label": "MAN",   "results": ["takuya"] },
-            { "label": "WOMAN", "results": ["iwami"] }
-          ]
-        },
+  step1() {
+    showQuestion(
+      "写真を見返した時、大切にしたいのは？",
+      ["感情／温かさ／物語","おしゃれ／世界観／美しさ"],
+      (i) => i === 0 ? this.step2() : this.step3()
+    );
+  },
 
-        /* ナチュラル × 楽しい */
-        { "id": "q3_natural_fun", "question": "好きな色味は？", "progress": "3 / 4",
-          "choices": [
-            { "label": "はっきり",       "results": ["konishi", "daisuke"] },
-            { "label": "淡い・優しい",   "results": ["zacky", "uchida"] }
-          ]
-        },
+  step2() {
+    showQuestion(
+      "結婚式で大切なポイントは？",
+      ["ゲストとの時間や空気感","ありのまま、自然体なふたりらしさ"],
+      () => this.step4()
+    );
+  },
 
-        /* ナチュラル × 寄り添い */
-        { "id": "q3_natural_yorisoi", "question": "好きな色味は？", "progress": "3 / 4",
-          "choices": [
-            { "label": "はっきり",       "next": "q4_gender_natural_yorisoi_hakkiri" },
-            { "label": "淡い・優しい",   "next": "q4_gender_natural_yorisoi_awai" }
-          ]
-        },
-        { "id": "q4_gender_natural_yorisoi_hakkiri", "question": "フォトグラファーの性別は？", "progress": "4 / 4",
-          "choices": [
-            { "label": "MAN",   "results": ["bessy"] },
-            { "label": "WOMAN", "results": ["Reika"] }
-          ]
-        },
-        { "id": "q4_gender_natural_yorisoi_awai", "question": "フォトグラファーの性別は？", "progress": "4 / 4",
-          "choices": [
-            { "label": "MAN",   "results": ["motti"] },
-            { "label": "WOMAN", "results": ["honoka"] }
-          ]
-        }
-      ],
+  step3() {
+    showQuestion(
+      "どんなフォトグラファーと過ごしたい？",
+      ["独自の世界観でふたりを導いてくれる","落ち着いた、寄り添ってくれる"],
+      () => this.step5()
+    );
+  },
 
-      "photographers": [
-        /* スタイリッシュ×楽しい（MAN/WOMAN別） */
-        { "id": "taihei",  "name": "taihei",
-          "comment": "楽しく盛り上げてくれながら\nオシャレな写真を残せる\nスタイリッシュ＆かっこいい雰囲気が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/taihei" },
-        { "id": "kenji",   "name": "kenji",
-          "comment": "楽しく盛り上げてくれながら\nオシャレな写真を残せる\nスタイリッシュ＆かっこいい雰囲気が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/kenji" },
-        { "id": "shiori",  "name": "shiori",
-          "comment": "楽しく盛り上げてくれながら\nオシャレな写真を残せる\nスタイリッシュ＆かっこいい雰囲気が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/shiori-sugimoto" },
+  step4() {
+    showQuestion(
+      "写真の雰囲気の好みは？",
+      ["にぎやか・笑顔・ドキュメンタリー","やわらかさ・自然・空気感"],
+      (i) => i === 0 ? showResult("A") : showResult("B")
+    );
+  },
 
-        /* スタイリッシュ×楽しい（上品=確定） */
-        { "id": "tatsuki", "name": "tatsuki",
-          "comment": "楽しく盛り上げてくれつつ\nおしゃれ＆洗練された綺麗な写真を残せる \n綺麗に残しつつたまに\nおしゃれな写真が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/tatsuki" },
+  step5() {
+    showQuestion(
+      "写真の仕上がりの好みは？",
+      ["ドラマチック・印象的","シンプル・上品・落ち着いた"],
+      (i) => i === 0 ? showResult("C") : showResult("D")
+    );
+  }
+};
 
-        /* スタイリッシュ×寄り添い（性別分岐／上品=Rio） */
-        { "id": "takuya",  "name": "takuya",
-          "comment": "寄り添いタイプ \n2人の雰囲気＋おしゃれな写真を残せる\nアンニュイな雰囲気が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/takuya" },
-        { "id": "iwami",   "name": "iwami",
-          "comment": "寄り添いタイプ \n2人の雰囲気＋おしゃれな写真を残せる\nアンニュイな雰囲気が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/iwami" },
-        { "id": "Rio",     "name": "Rio",
-          "comment": "寄り添いタイプ\nおしゃれ＆上質な写真を残せる\n空気感が伝わる写真を残したい方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/rio" },
+function showQuestion(text, choices, onSelect) {
+  const card = document.getElementById("card");
+  const result = document.getElementById("result");
+  result.classList.add("hidden");
 
-        /* ナチュラル×楽しい（はっきり／淡い） */
-        { "id": "konishi", "name": "konishi",
-          "comment": "楽しく盛り上げてくれながら\nはっきりした色味の写真を残せる\nどんな年代の方にもおすすめ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/konishi" },
-        { "id": "daisuke", "name": "daisuke",
-          "comment": "楽しく盛り上げてくれながら\nはっきりした色味の写真を残せる\nどんな年代の方にもおすすめ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/daisuke" },
+  card.innerHTML = `
+    <div class="question">${text}</div>
+    <div class="choices">
+      ${choices.map((c,i)=>`<button class="choice" onclick="handleChoice(${i})">${c}</button>`).join("")}
+    </div>
+  `;
 
-        { "id": "zacky",   "name": "zacky",
-          "comment": "楽しく盛り上げてくれながら\n淡い色味の写真を残せる\n友達みたいなフォトグラファーがいい方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/zacky" },
-        { "id": "uchida",  "name": "uchida",
-          "comment": "楽しく盛り上げてくれながら\n淡い色味の写真を残せる\n友達みたいなフォトグラファーがいい方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/uchida" },
+  window.handleChoice = onSelect;
+}
 
-        /* ナチュラル×寄り添い（性別分岐） */
-        { "id": "bessy",   "name": "bessy",
-          "comment": "寄り添いタイプ\nはっきりした色味で写真を残せる\nクリアな写真が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/bessy" },
-        { "id": "Reika",   "name": "Reika",
-          "comment": "寄り添いタイプ\nはっきりした色味で写真を残せる\nクリアな写真が好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/reika" },
+function showResult(key) {
+  const card = document.getElementById("card");
+  const result = document.getElementById("result");
+  card.innerHTML = "";
+  const r = results[key];
 
-        { "id": "motti",   "name": "motti",
-          "comment": "寄り添いタイプ\n光の入った優しい写真を残せる\nナチュラルテイストが好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/motti" },
-        { "id": "honoka",  "name": "honoka",
-          "comment": "寄り添いタイプ\n光の入った優しい写真を残せる\nナチュラルテイストが好きな方へ",
-          "portfolio_url": "https://www.la-viephoto.com/photo_g/honoka" }
-      ]
-    };
+  result.innerHTML = `
+    <div class="card">
+      <div class="result-title">${r.title}</div>
+      <div class="result-sub">${r.sub}</div>
+      <div class="pg-list">
+        ${r.photographers.map(p=>`
+          <div class="pg">
+            <div class="pg-name">${p.name}</div>
+            <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div>
+            <a href="${PG_URL>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+  result.classList.remove("hidden");
+}
 
-    /* ====== ロジック（ES5・端末互換優先） ====== */
-    var state = { step: "q1", results: null };
-
-    function findNode(id){ for(var i=0;i<DATA.nodes.length;i++){ if(DATA.nodes[i].id===id) return DATA.nodes[i]; } return null; }
-    function resolvePhotographers(ids){
-      var list = [];
-      for(var i=0;i<ids.length;i++){
-        for(var j=0;j<DATA.photographers.length;j++){
-          if(DATA.photographers[j].id===ids[i]){ list.push(DATA.photographers[j]); break; }
-        }
-      }
-      return list;
-    }
-    function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-
-    function renderQuestion(node){
-      var html = "";
-      html += "<h2>"+esc(node.question)+"</h2>";
-      html += '<div class="choices">';
-      for(var i=0;i<node.choices.length;i++){
-        var c=node.choices[i];
-        html += '<button class="choice" data-next="'+(c.next?esc(c.next):"")+'" data-results="'+(c.results?esc(JSON.stringify(c.results)):"")+'">'+esc(c.label)+'</button>';
-      }
-      html += '</div>';
-      html += '<div class="progress">'+(node.progress?esc(node.progress):"")+'</div>';
-
-      var el=document.getElementById('card');
-      el.innerHTML = html;
-      el.className = "card";
-      document.getElementById('result').className="hidden";
-
-      var btns = el.getElementsByClassName('choice');
-      for(var k=0;k<btns.length;k++){
-        btns[k].addEventListener('click', function(){
-          var resultsStr=this.getAttribute('data-results');
-          if(resultsStr){
-            try{ state.results=JSON.parse(resultsStr);}catch(e){ state.results=[];}
-            state.step="FINAL"; run(); return;
-          }
-          var next=this.getAttribute('data-next');
-          state.step = next || "FINAL";
-          run();
-        });
-      }
-    }
-
-    function renderResult(){
-      var ids = (state.results && state.results.length)? state.results : [];
-      var list = resolvePhotographers(ids);
-      var wrap = document.getElementById('pgList');
-      var html = "";
-
-      if(!list.length){
-        html = "<p>該当のPGが見つかりませんでした。</p>";
-      }else{
-        for(var i=0;i<list.length;i++){
-          var p=list[i];
-          var url = (p.portfolio_url && p.portfolio_url.replace(/^\s+|\s+$/g,"")) || DEFAULT_PORTFOLIO_URL;
-          html += '<article class="pg">';
-          html +=   '<div><h3>'+esc(p.name)+'</h3>'+(p.comment?'<p class="comment">'+esc(p.comment)+'</p>':'')+'</div>';
-          html +=   '<div style="text-align:right; min-width:180px;">';
-          html +=     '<a class="btn" href="'+esc(url)+'" target="_self" rel="noreferrer">作品を見る</a>';
-          html +=     '<div class="url-line"><a href="'+esc(url)+'" target="_self" rel="noreferrer">'+esc(url)+'</a></div>';
-          html +=   '</div>';
-          html += '</article>';
-        }
-      }
-      wrap.innerHTML = html;
-
-      document.getElementById('card').className="hidden";
-      document.getElementById('result').className="";
-
-      document.getElementById('restart').onclick=function(){
-        state.step="q1"; state.results=null; run();
-      };
-    }
-
-    function run(){
-      if(state.step==="FINAL"){ renderResult(); return; }
-      var node=findNode(state.step);
-      if(!node){ state.step="FINAL"; renderResult(); return; }
-      renderQuestion(node);
-    }
-
-    // 初期表示
-    window.onload = function(){ run(); };
-  </script>
+flow.start();
+</script>
 </body>
 </html>
