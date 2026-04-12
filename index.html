@@ -133,138 +133,114 @@
 </div>
 
 <script>
-const PG_URL = "https://www.la-viephoto.com/photo_g/kyoto";
+(function () {
+  const PG_URL = "https://www.la-viephoto.com/photo_g/kyoto";
 
-const results = {
-  A: {
-    title: "ゲストみんなとの一体感",
-    sub: "笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
-    photographers: [
-      { name: "Kenji", tags: ["#アーティスティック","#モード","#フレンドリー","#ハートフル"] },
-      { name: "yumico", tags: ["#ハッピー","#ドキュメンタリー","#フレンドリー","#アットホーム"] },
-      { name: "HARUKI", tags: ["#しっとり","#フレンドリー","#大人っぽさ","#アットホーム"] },
-      { name: "Hibino", tags: ["#ハートフル","#おしゃれ","#ハッピー","#エモーショナル"] }
-    ]
-  },
-  B: {
-    title: "自然体なふたりらしさを重視",
-    sub: "無理せず、いつもの自分たちで過ごせるPGタイプ",
-    photographers: [
-      { name: "akane", tags: ["#自然体","#いつものふたり","#笑顔","#安心感"] },
-      { name: "unio", tags: ["#王道","#ナチュラル","#ポージング","#フレンドリー"] },
-      { name: "Kacchan", tags: ["#温かさ","#空気感","#ふたりらしさ","#寄り添う"] },
-      { name: "tsukasa", tags: ["#フレンドリー","#ポージング","#シャープ","#鮮やかさ"] }
-    ]
-  },
-  C: {
-    title: "独自の世界観に導いてくれる",
-    sub: "特別な一日を“作品”として残したいあなたへ",
-    photographers: [
-      { name: "shinomiya", tags: ["#エモーショナル","#おしゃれ","#空気感","#しっとり"] },
-      { name: "TAIHEI", tags: ["#モード","#シック","#大人っぽい","#非日常"] },
-      { name: "naoya", tags: ["#大人っぽい","#しっとり","#美しさ","#フレンドリー"] },
-      { name: "toro", tags: ["#きれいめ","#ポージング","#繊細な光","#親しみやすさ"] }
-    ]
-  },
-  D: {
-    title: "寄り添い、安心感で包み込む",
-    sub: "緊張せず、穏やかに過ごしたいあなたへ",
-    photographers: [
-      { name: "TATSUYA", tags: ["#穏やか","#ポージング","#透明感","#安心感"] },
-      { name: "KIZ", tags: ["#作品性","#美しい構図","#落ち着く","#安心感"] },
-      { name: "imani", tags: ["#やわらかさ","#あたたかさ","#ふんわり","#穏やか"] }
-    ]
+  const results = {
+    A: {
+      title: "ゲストみんなとの一体感",
+      sub: "笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
+      photographers: [
+        { name: "Kenji", tags: ["#アーティスティック","#モード","#フレンドリー","#ハートフル"] },
+        { name: "yumico", tags: ["#ハッピー","#ドキュメンタリー","#フレンドリー","#アットホーム"] },
+        { name: "HARUKI", tags: ["#しっとり","#フレンドリー","#大人っぽさ","#アットホーム"] },
+        { name: "Hibino", tags: ["#ハートフル","#おしゃれ","#ハッピー","#エモーショナル"] }
+      ]
+    },
+    B: {
+      title: "自然体なふたりらしさを重視",
+      sub: "無理せず、いつもの自分たちで過ごせるPGタイプ",
+      photographers: [
+        { name: "akane", tags: ["#自然体","#いつものふたり","#笑顔","#安心感"] },
+        { name: "unio", tags: ["#王道","#ナチュラル","#ポージング","#フレンドリー"] },
+        { name: "Kacchan", tags: ["#温かさ","#空気感","#ふたりらしさ","#寄り添う"] },
+        { name: "tsukasa", tags: ["#フレンドリー","#ポージング","#シャープ","#鮮やかさ"] }
+      ]
+    },
+    C: {
+      title: "独自の世界観に導いてくれる",
+      sub: "特別な一日を“作品”として残したいあなたへ",
+      photographers: [
+        { name: "shinomiya", tags: ["#エモーショナル","#おしゃれ","#空気感","#しっとり"] },
+        { name: "TAIHEI", tags: ["#モード","#シック","#大人っぽい","#非日常"] },
+        { name: "naoya", tags: ["#大人っぽい","#しっとり","#美しさ","#フレンドリー"] },
+        { name: "toro", tags: ["#きれいめ","#ポージング","#繊細な光","#親しみやすさ"] }
+      ]
+    },
+    D: {
+      title: "寄り添い、安心感で包み込む",
+      sub: "緊張せず、穏やかに過ごしたいあなたへ",
+      photographers: [
+        { name: "TATSUYA", tags: ["#穏やか","#ポージング","#透明感","#安心感"] },
+        { name: "KIZ", tags: ["#作品性","#美しい構図","#落ち着く","#安心感"] },
+        { name: "imani", tags: ["#やわらかさ","#あたたかさ","#ふんわり","#穏やか"] }
+      ]
+    }
+  };
+
+  const card = document.getElementById("card");
+  const result = document.getElementById("result");
+
+  function showQuestion(text, choices, onClick) {
+    result.classList.add("hidden");
+    card.innerHTML =
+      `<div class="question">${text}</div>
+       <div class="choices">
+         ${choices.map((c, i) =>
+           `<button class="choice" data-i="${i}">${c}</button>`
+         ).join("")}
+       </div>`;
+
+    card.querySelectorAll("button").forEach(btn => {
+      btn.onclick = () => onClick(Number(btn.dataset.i));
+    });
   }
-};
 
-const flow = {
-  start() {
-    this.step1();
-  },
+  function showResult(key) {
+    const r = results[key];
+    card.innerHTML = "";
+    result.innerHTML =
+      `<div class="card">
+         <div class="result-title">${r.title}</div>
+         <div class="result-sub">${r.sub}</div>
+         <div class="pg-list">
+           ${r.photographers.map(p =>
+             `<div class="pg">
+                <div class="pg-name">${p.name}</div>
+                <div class="tags">${p.tags.map(t => `<span>${t}</span>`).join("")}</div>
+                <a href="${PG_URL}" target="_blank/div>`
+           ).join("")}
+         </div>
+       </div>`;
+    result.classList.remove("hidden");
+  }
 
-  step1() {
+  window.onload = function () {
     showQuestion(
       "写真を見返した時、大切にしたいのは？",
       ["感情／温かさ／物語","おしゃれ／世界観／美しさ"],
-      (i) => i === 0 ? this.step2() : this.step3()
+      i => i === 0
+        ? showQuestion(
+            "結婚式で大切なポイントは？",
+            ["ゲストとの時間や空気感","ありのまま、自然体なふたりらしさ"],
+            () => showQuestion(
+              "写真の雰囲気の好みは？",
+              ["にぎやか・笑顔・ドキュメンタリー","やわらかさ・自然・空気感"],
+              j => j === 0 ? showResult("A") : showResult("B")
+            )
+          )
+        : showQuestion(
+            "どんなフォトグラファーと過ごしたい？",
+            ["独自の世界観でふたりを導いてくれる","落ち着いた、寄り添ってくれる"],
+            () => showQuestion(
+              "写真の仕上がりの好みは？",
+              ["ドラマチック・印象的","シンプル・上品・落ち着いた"],
+              k => k === 0 ? showResult("C") : showResult("D")
+            )
+          )
     );
-  },
-
-  step2() {
-    showQuestion(
-      "結婚式で大切なポイントは？",
-      ["ゲストとの時間や空気感","ありのまま、自然体なふたりらしさ"],
-      () => this.step4()
-    );
-  },
-
-  step3() {
-    showQuestion(
-      "どんなフォトグラファーと過ごしたい？",
-      ["独自の世界観でふたりを導いてくれる","落ち着いた、寄り添ってくれる"],
-      () => this.step5()
-    );
-  },
-
-  step4() {
-    showQuestion(
-      "写真の雰囲気の好みは？",
-      ["にぎやか・笑顔・ドキュメンタリー","やわらかさ・自然・空気感"],
-      (i) => i === 0 ? showResult("A") : showResult("B")
-    );
-  },
-
-  step5() {
-    showQuestion(
-      "写真の仕上がりの好みは？",
-      ["ドラマチック・印象的","シンプル・上品・落ち着いた"],
-      (i) => i === 0 ? showResult("C") : showResult("D")
-    );
-  }
-};
-
-function showQuestion(text, choices, onSelect) {
-  const card = document.getElementById("card");
-  const result = document.getElementById("result");
-  result.classList.add("hidden");
-
-  card.innerHTML = `
-    <div class="question">${text}</div>
-    <div class="choices">
-      ${choices.map((c,i)=>`<button class="choice" onclick="handleChoice(${i})">${c}</button>`).join("")}
-    </div>
-  `;
-
-  window.handleChoice = onSelect;
-}
-
-function showResult(key) {
-  const card = document.getElementById("card");
-  const result = document.getElementById("result");
-  card.innerHTML = "";
-  const r = results[key];
-
-  result.innerHTML = `
-    <div class="card">
-      <div class="result-title">${r.title}</div>
-      <div class="result-sub">${r.sub}</div>
-      <div class="pg-list">
-        ${r.photographers.map(p=>`
-          <div class="pg">
-            <div class="pg-name">${p.name}</div>
-            <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div>
-            <a href="${PG_URL>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-  `;
-  result.classList.remove("hidden");
-}
-
-window.onload = function () {
-  flow.start();
-};
+  };
+})();
 </script>
 </body>
 </html>
