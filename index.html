@@ -92,15 +92,17 @@
       margin-bottom: 6px;
     }
 
-    .tags {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 8px;
-    }
+.tags {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
 
-    .tags span {
-      margin-right: 6px;
-    }
+.tags span {
+  margin-right: 6px;
+  cursor: default;
+}
+``
 
     .pg a {
       font-size: 13px;
@@ -196,24 +198,55 @@
     });
   }
 
-  function showResult(key) {
-    const r = results[key];
-    card.innerHTML = "";
-    result.innerHTML =
-      `<div class="card">
-         <div class="result-title">${r.title}</div>
-         <div class="result-sub">${r.sub}</div>
-         <div class="pg-list">
-           ${r.photographers.map(p =>
-             `<div class="pg">
-                <div class="pg-name">${p.name}</div>
-                <div class="tags">${p.tags.map(t => `<span>${t}</span>`).join("")}</div>
-                <a href="${PG_URL}" target="_blank/div>`
-           ).join("")}
-         </div>
-       </div>`;
-    result.classList.remove("hidden");
+ function showResult(key) {
+  const r = results[key];
+  card.innerHTML = "";
+
+  result.innerHTML = `
+    <div class="card">
+      <div class="result-title">${r.title}</div>
+      <div class="result-sub">${r.sub}</div>
+
+      <div class="pg-list">
+        ${r.photographers.map((p, idx) => `
+          <div class="pg">
+            <div class="pg-name">
+              <a href="${PG_URL}" target="_blank">${p.name}</a>
+            </div>
+            <div class="tags">
+              ${p.tags.map(t => `<span>${t}</span>`).join("")}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+
+      ${r.recommend ? `
+        <div class="recommend">
+          <button class="recommend-toggle">
+            こんなあなたにおすすめ ▾
+          </button>
+          <div class="recommend-body hidden">
+            ${r.recommend}
+          </div>
+        </div>
+      ` : ``}
+    </div>
+  `;
+
+  // 「こんなあなたにおすすめ」開閉処理
+  const toggle = result.querySelector(".recommend-toggle");
+  if (toggle) {
+    toggle.onclick = () => {
+      const body = result.querySelector(".recommend-body");
+      body.classList.toggle("hidden");
+      toggle.innerText = body.classList.contains("hidden")
+        ? "こんなあなたにおすすめ ▾"
+        : "こんなあなたにおすすめ ▴";
+    };
   }
+
+  result.classList.remove("hidden");
+}
 
   window.onload = function () {
     showQuestion(
