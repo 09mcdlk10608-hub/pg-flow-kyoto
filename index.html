@@ -185,6 +185,7 @@
   const result = document.getElementById("result");
 
   function showQuestion(text, choices, onClick) {
+    card.classList.remove("hidden"); //
     result.classList.add("hidden");
     card.innerHTML =
       `<div class="question">${text}</div>
@@ -199,9 +200,11 @@
     });
   }
 
- function showResult(key) {
+function showResult(key) {
   const r = results[key];
   card.innerHTML = "";
+  card.classList.add("hidden"); // ← 追加
+``
 
   result.innerHTML = `
     <div class="card">
