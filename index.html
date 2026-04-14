@@ -4,10 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PG指名フローチャート（京都店）</title>
+
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 
-                   "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo", sans-serif;
       margin: 0;
       background: #ffffff;
       color: #222;
@@ -27,16 +28,15 @@
     .sub {
       font-size: 14px;
       color: #666;
-      margin-bottom: 12px; /* ← 24px → 12px */
+      margin-bottom: 12px;
     }
 
-.card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  margin-top: 0;
-}
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
 
     .question {
       font-size: 18px;
@@ -58,13 +58,7 @@
       font-size: 15px;
     }
 
-    button.choice:hover {
-      border-color: #999;
-    }
-
-    .hidden {
-      display: none;
-    }
+    .hidden { display:none; }
 
     .result-title {
       font-size: 20px;
@@ -93,22 +87,40 @@
       margin-bottom: 6px;
     }
 
-.tags {
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-.tags span {
-  margin-right: 6px;
-  cursor: default;
-}
-``
-
-    .pg a {
-      font-size: 13px;
-      color: #444;
+    .pg-name a {
+      color: #222;
       text-decoration: underline;
+    }
+
+    .tags {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .tags span {
+      margin-right: 6px;
+      cursor: default;
+    }
+
+    .recommend {
+      margin-top: 16px;
+    }
+
+    .recommend-toggle {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 14px;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .recommend-body {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #444;
     }
 
     footer {
@@ -119,15 +131,16 @@
     }
   </style>
 </head>
+
 <body>
 <div class="wrap">
+
   <h1>PG指名フローチャート（京都店）</h1>
-  <div class="sub">5つの質問で、あなたに合うPGをご提案します</div>
+  <div class="sub">
+    5つの質問で、あなたに合うPGをご提案します
+  </div>
 
-  <!-- 質問表示エリア -->
   <div id="card" class="card"></div>
-
-  <!-- 結果表示エリア -->
   <div id="result" class="hidden"></div>
 
   <footer>
@@ -137,12 +150,19 @@
 
 <script>
 (function () {
+
   const PG_URL = "https://www.la-viephoto.com/photo_g/kyoto";
 
   const results = {
     A: {
       title: "ゲストみんなとの一体感",
       sub: "笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
+      recommend: `
+        みんなとの時間が何より大事。<br>
+        笑顔・会話・その場の温度を残したい方。<br><br>
+        <strong>おすすめのフォトグラファー：</strong><br>
+        一緒に場を楽しみながら、自然に溶け込んで撮る
+      `,
       photographers: [
         { name: "Kenji", tags: ["#アーティスティック","#モード","#フレンドリー","#ハートフル"] },
         { name: "yumico", tags: ["#ハッピー","#ドキュメンタリー","#フレンドリー","#アットホーム"] },
@@ -150,9 +170,16 @@
         { name: "Hibino", tags: ["#ハートフル","#おしゃれ","#ハッピー","#エモーショナル"] }
       ]
     },
+
     B: {
       title: "自然体なふたりらしさを重視",
       sub: "無理せず、いつもの自分たちで過ごせるPGタイプ",
+      recommend: `
+        作り込むより“いつもの自分たち”。<br>
+        リラックスして過ごしたい方へ。<br><br>
+        <strong>おすすめのフォトグラファー：</strong><br>
+        安心感を持って寄り添ってくれる
+      `,
       photographers: [
         { name: "akane", tags: ["#自然体","#いつものふたり","#笑顔","#安心感"] },
         { name: "unio", tags: ["#王道","#ナチュラル","#ポージング","#フレンドリー"] },
@@ -160,9 +187,16 @@
         { name: "tsukasa", tags: ["#フレンドリー","#ポージング","#シャープ","#鮮やかさ"] }
       ]
     },
+
     C: {
       title: "独自の世界観に導いてくれる",
       sub: "特別な一日を“作品”として残したいあなたへ",
+      recommend: `
+        非日常感や世界観を大切にしたい方。<br>
+        お任せで作品づくりを楽しみたい方へ。<br><br>
+        <strong>おすすめのフォトグラファー：</strong><br>
+        演出や構図で世界観を引き出してくれる
+      `,
       photographers: [
         { name: "shinomiya", tags: ["#エモーショナル","#おしゃれ","#空気感","#しっとり"] },
         { name: "TAIHEI", tags: ["#モード","#シック","#大人っぽい","#非日常"] },
@@ -170,9 +204,16 @@
         { name: "toro", tags: ["#きれいめ","#ポージング","#繊細な光","#親しみやすさ"] }
       ]
     },
+
     D: {
       title: "寄り添い、安心感で包み込む",
       sub: "緊張せず、穏やかに過ごしたいあなたへ",
+      recommend: `
+        丁寧さと安心感を大切にしたい方。<br>
+        静かに、ゆったり撮影したい方へ。<br><br>
+        <strong>おすすめのフォトグラファー：</strong><br>
+        控えめに、そっと支えてくれる
+      `,
       photographers: [
         { name: "TATSUYA", tags: ["#穏やか","#ポージング","#透明感","#安心感"] },
         { name: "KIZ", tags: ["#作品性","#美しい構図","#落ち着く","#安心感"] },
@@ -185,72 +226,63 @@
   const result = document.getElementById("result");
 
   function showQuestion(text, choices, onClick) {
-    card.classList.remove("hidden"); //
+    card.classList.remove("hidden");
     result.classList.add("hidden");
-    card.innerHTML =
-      `<div class="question">${text}</div>
-       <div class="choices">
-         ${choices.map((c, i) =>
-           `<button class="choice" data-i="${i}">${c}</button>`
-         ).join("")}
-       </div>`;
 
-    card.querySelectorAll("button").forEach(btn => {
-      btn.onclick = () => onClick(Number(btn.dataset.i));
+    card.innerHTML = `
+      <div class="question">${text}</div>
+      <div class="choices">
+        ${choices.map((c,i)=>`<button class="choice" data-i="${i}">${c}</button>`).join("")}
+      </div>
+    `;
+
+    card.querySelectorAll("button").forEach(btn=>{
+      btn.onclick = ()=>onClick(Number(btn.dataset.i));
     });
   }
 
-function showResult(key) {
-  const r = results[key];
-  card.innerHTML = "";
-  card.classList.add("hidden"); // ← 追加
-``
+  function showResult(key) {
+    const r = results[key];
+    card.classList.add("hidden");
 
-  result.innerHTML = `
-    <div class="card">
-      <div class="result-title">${r.title}</div>
-      <div class="result-sub">${r.sub}</div>
+    result.innerHTML = `
+      <div class="card">
+        <div class="result-title">${r.title}</div>
+        <div class="result-sub">${r.sub}</div>
 
-      <div class="pg-list">
-        ${r.photographers.map((p, idx) => `
-          <div class="pg">
-            <div class="pg-name">
-              <a href="${PG_URL}" target="_blank">${p.name}</a>
+        <div class="pg-list">
+          ${r.photographers.map(p=>`
+            <div class="pg">
+              <div class="pg-name">
+                ${PG_URL}${p.name}</a>
+              </div>
+              <div class="tags">
+                ${p.tags.map(t=>`<span>${t}</span>`).join("")}
+              </div>
             </div>
-            <div class="tags">
-              ${p.tags.map(t => `<span>${t}</span>`).join("")}
-            </div>
-          </div>
-        `).join("")}
-      </div>
+          `).join("")}
+        </div>
 
-      ${r.recommend ? `
         <div class="recommend">
-          <button class="recommend-toggle">
-            こんなあなたにおすすめ ▾
-          </button>
+          <button class="recommend-toggle">▼ こんなあなたにおすすめ</button>
           <div class="recommend-body hidden">
             ${r.recommend}
           </div>
         </div>
-      ` : ``}
-    </div>
-  `;
+      </div>
+    `;
 
-  // 「こんなあなたにおすすめ」開閉処理
-  const toggle = result.querySelector(".recommend-toggle");
-  if (toggle) {
-    toggle.onclick = () => {
+    const toggle = result.querySelector(".recommend-toggle");
+    toggle.onclick = ()=>{
       const body = result.querySelector(".recommend-body");
       body.classList.toggle("hidden");
-      toggle.innerText = body.classList.contains("hidden")
-        ? "こんなあなたにおすすめ ▾"
-        : "こんなあなたにおすすめ ▴";
+      toggle.textContent = body.classList.contains("hidden")
+        ? "▼ こんなあなたにおすすめ"
+        : "▲ こんなあなたにおすすめ";
     };
-  }
 
-  result.classList.remove("hidden");
-}
+    result.classList.remove("hidden");
+  }
 
   window.onload = function () {
     showQuestion(
@@ -260,24 +292,26 @@ function showResult(key) {
         ? showQuestion(
             "結婚式で大切なポイントは？",
             ["ゲストとの時間や空気感","ありのまま、自然体なふたりらしさ"],
-            () => showQuestion(
+            ()=>showQuestion(
               "写真の雰囲気の好みは？",
               ["にぎやか・笑顔・ドキュメンタリー","やわらかさ・自然・空気感"],
-              j => j === 0 ? showResult("A") : showResult("B")
+              j => j===0 ? showResult("A") : showResult("B")
             )
           )
         : showQuestion(
             "どんなフォトグラファーと過ごしたい？",
             ["独自の世界観でふたりを導いてくれる","落ち着いた、寄り添ってくれる"],
-            () => showQuestion(
+            ()=>showQuestion(
               "写真の仕上がりの好みは？",
               ["ドラマチック・印象的","シンプル・上品・落ち着いた"],
-              k => k === 0 ? showResult("C") : showResult("D")
+              k => k===0 ? showResult("C") : showResult("D")
             )
           )
     );
   };
+
 })();
 </script>
+
 </body>
 </html>
