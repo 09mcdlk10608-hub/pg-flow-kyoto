@@ -242,47 +242,52 @@
   }
 
   function showResult(key) {
-    const r = results[key];
-    card.classList.add("hidden");
+  const r = results[key];
+  card.classList.add("hidden");
 
-    result.innerHTML = `
-      <div class="card">
-        <div class="result-title">${r.title}</div>
-        <div class="result-sub">${r.sub}</div>
+  result.innerHTML = `
+    <div class="card">
 
-        <div class="pg-list">
-          ${r.photographers.map(p=>`
-            <div class="pg">
-              <div class="pg-name">
-                ${PG_URL}${p.name}</a>
-              </div>
-              <div class="tags">
-                ${p.tags.map(t=>`<span>${t}</span>`).join("")}
-              </div>
-            </div>
-          `).join("")}
-        </div>
+      <div class="result-title">${r.title}</div>
+      <div class="result-sub">${r.sub}</div>
 
-        <div class="recommend">
-          <button class="recommend-toggle">▼ こんなあなたにおすすめ</button>
-          <div class="recommend-body hidden">
-            ${r.recommend}
-          </div>
+      <!-- ▼ こんなあなたにおすすめ：PGの上に配置 -->
+      <div class="recommend">
+        <button class="recommend-toggle">▼ こんなあなたにおすすめ</button>
+        <div class="recommend-body hidden">
+          ${r.recommend}
         </div>
       </div>
-    `;
 
-    const toggle = result.querySelector(".recommend-toggle");
-    toggle.onclick = ()=>{
-      const body = result.querySelector(".recommend-body");
-      body.classList.toggle("hidden");
-      toggle.textContent = body.classList.contains("hidden")
-        ? "▼ こんなあなたにおすすめ"
-        : "▲ こんなあなたにおすすめ";
-    };
+      <!-- PG一覧 -->
+      <div class="pg-list">
+        ${r.photographers.map(p => `
+          <div class="pg">
+            <div class="pg-name">
+              <a href="${PG_URL}" target="_blank">${p.name}</a>
+            </div>
+            <div class="tags">
+              ${p.tags.map(t => `<span>${t}</span>`).join("")}
+            </div>
+          </div>
+        `).join("")}
+      </div>
 
-    result.classList.remove("hidden");
-  }
+    </div>
+  `;
+
+  // ▼ 開閉処理
+  const toggle = result.querySelector(".recommend-toggle");
+  toggle.onclick = () => {
+    const body = result.querySelector(".recommend-body");
+    body.classList.toggle("hidden");
+    toggle.textContent = body.classList.contains("hidden")
+      ? "▼ こんなあなたにおすすめ"
+      : "▲ こんなあなたにおすすめ";
+  };
+
+  result.classList.remove("hidden");
+}
 
   window.onload = function () {
     showQuestion(
