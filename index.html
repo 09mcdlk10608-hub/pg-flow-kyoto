@@ -117,6 +117,10 @@
       cursor: pointer;
     }
 
+    .recommend-toggle:hover {
+      text-decoration: underline;
+    }
+
     .recommend-body {
       margin-top: 10px;
       font-size: 14px;
@@ -252,9 +256,9 @@
       <div class="result-title">${r.title}</div>
       <div class="result-sub">${r.sub}</div>
 
-      <!-- ▼ こんなあなたにおすすめ：PGの上に配置 -->
+      <!-- ▷ こんなあなたにおすすめ（←ここをタップ）：PGの上に配置 -->
       <div class="recommend">
-        <button class="recommend-toggle">▼ こんなあなたにおすすめ</button>
+        <button class="recommend-toggle">▷ こんなあなたにおすすめ（←ここをタップ）</button>
         <div class="recommend-body hidden">
           ${r.recommend}
         </div>
@@ -283,8 +287,8 @@
     const body = result.querySelector(".recommend-body");
     body.classList.toggle("hidden");
     toggle.textContent = body.classList.contains("hidden")
-      ? "▼ こんなあなたにおすすめ"
-      : "▲ こんなあなたにおすすめ";
+      ? "▷ こんなあなたにおすすめ（←ここをタップ）"
+      : "▼ こんなあなたにおすすめ（閉じる）";
   };
 
   result.classList.remove("hidden");
