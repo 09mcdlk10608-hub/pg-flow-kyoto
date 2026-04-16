@@ -235,11 +235,15 @@
     result.classList.add("hidden");
 
     card.innerHTML = `
-      <div class="question">${text}</div>
-      <div class="choices">
-        ${choices.map((c,i)=>`<button class="choice" data-i="${i}">${c}</button>`).join("")}
-      </div>
-    `;
+  <div class="question">${text}</div>
+  <div class="choices">
+    ${choices.map((c,i)=>`<button class="choice" data-i="${i}">${c}</button>`).join("")}
+  </div>
+
+  <div class="back-top">
+    <button class="restart-btn">↺ 質問の最初に戻る</button>
+  </div>
+`;
 
     card.querySelectorAll("button").forEach(btn=>{
       btn.onclick = ()=>onClick(Number(btn.dataset.i));
