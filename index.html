@@ -1,46 +1,29 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PG指名フローチャート（京都店）</title>
 
 <style>
 body {
   font-family: system-ui, -apple-system,
   "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo", sans-serif;
-  margin: 0;
-  background: #fff;
-  color: #222;
+  margin:0; background:#fff; color:#222;
 }
-.wrap {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 24px 16px 40px;
-}
-h1 { font-size: 22px; margin-bottom: 6px; }
-.sub { font-size: 14px; color:#666; margin-bottom: 16px; }
+.wrap { max-width:760px; margin:0 auto; padding:24px 16px 40px; }
+h1 { font-size:22px; margin-bottom:6px; }
+.sub { font-size:14px; color:#666; margin-bottom:16px; }
 
-.card {
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:20px;
-}
+.card { border:1px solid #ddd; border-radius:10px; padding:20px; }
+.hidden { display:none; }
 
 .question { font-size:18px; margin-bottom:16px; }
-.choices {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
+.choices { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .choice {
-  padding:14px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  background:#fafafa;
-  cursor:pointer;
+  padding:14px; border-radius:10px;
+  border:1px solid #ccc; background:#fafafa; cursor:pointer;
 }
-.hidden { display:none; }
 
 .result-title { font-size:20px; margin-bottom:6px; }
 .result-sub { font-size:14px; color:#666; margin-bottom:12px; }
@@ -50,12 +33,7 @@ h1 { font-size: 22px; margin-bottom: 6px; }
 .pg-name a { color:#222; text-decoration:underline; }
 .tags { font-size:13px; color:#666; }
 
-footer {
-  margin-top:32px;
-  font-size:12px;
-  color:#777;
-  text-align:center;
-}
+footer { margin-top:32px; font-size:12px; color:#777; text-align:center; }
 </style>
 </head>
 
@@ -67,27 +45,28 @@ footer {
   <div id="card" class="card"></div>
   <div id="result" class="hidden"></div>
 
-  <footer>
-    ※最終の結果画面から公式サイトの作品ページへ遷移します
-  </footer>
+  <footer>※最終の結果画面から公式サイトの作品ページへ遷移します</footer>
 </div>
 
 <script>
 const card = document.getElementById("card");
 const result = document.getElementById("result");
 
-function showQuestion(text, choices, handlers) {
+/* ---------- 共通描画 ---------- */
+function showQuestion(text, aText, bText, onA, onB) {
   card.classList.remove("hidden");
   result.classList.add("hidden");
+
   card.innerHTML = `
     <div class="question">${text}</div>
     <div class="choices">
-      ${choices.map((c,i)=>`<button class="choice" data-i="${i}">${c}</button>`).join("")}
+      <button id="btnA" class="choice">${aText}</button>
+      <button id="btnB" class="choice">${bText}</button>
     </div>
   `;
-  card.querySelectorAll(".choice").forEach(btn=>{
-    btn.onclick = ()=>handlersNumber(btn.dataset.i);
-  });
+
+  document.getElementById("btnA").onclick = onA;
+  document.getElementById("btnB").onclick = onB;
 }
 
 function showResult(title) {
@@ -95,37 +74,45 @@ function showResult(title) {
   result.innerHTML = `
     <div class="card">
       <div class="result-title">${title}</div>
-      <p>※ デモ結果</p>
+      <p>（ここに最終結果を表示）</p>
     </div>
   `;
   result.classList.remove("hidden");
 }
 
-/* 質問定義（最小） */
+/* ---------- 質問定義 ---------- */
 function q1() {
   showQuestion(
     "写真を見返した時、大切にしたいのは？",
-    ["感情／温かさ","おしゃれ／世界観"],
-    [q2, q3]
-  );
-}
-function q2() {
-  showQuestion(
-    "結婚式で大切なポイントは？",
-    ["ゲストとの時間","自然体"],
-    [()=>showResult("結果A"), ()=>showResult("結果B")]
-  );
-}
-function q3() {
-  showQuestion(
-    "どんなフォトグラファーと過ごしたい？",
-    ["世界観","寄り添い"],
-    [()=>showResult("結果C"), ()=>showResult("結果D")]
+    "感情／温かさ／物語",
+    "おしゃれ／世界観／美しさ",
+    q2,
+    q3
   );
 }
 
+function q2() {
+  showQuestion(
+    "結婚式で大切なポイントは？",
+    "ゲストとの時間",
+    "自然体",
+    () => showResult("結果A"),
+    () => showResult("結果B")
+  );
+}
+
+function q3() {
+  showQuestion(
+    "どんなフォトグラファーと過ごしたい？",
+    "世界観",
+    "寄り添い",
+    () => showResult("結果C"),
+    () => showResult("結果D")
+  );
+}
+
+/* ---------- 開始 ---------- */
 window.onload = q1;
 </script>
 </body>
 </html>
-``
