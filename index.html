@@ -13,27 +13,15 @@ body {
   background: #fff;
   color: #222;
 }
-.wrap {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 24px 16px 40px;
-}
-h1 { font-size: 22px; margin-bottom: 6px; }
-.sub { font-size: 14px; color:#666; margin-bottom: 16px; }
+.wrap { max-width:760px; margin:0 auto; padding:24px 16px 40px; }
+h1 { font-size:22px; margin-bottom:6px; }
+.sub { font-size:14px; color:#666; margin-bottom:16px; }
 
-.card {
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:20px;
-}
+.card { border:1px solid #ddd; border-radius:10px; padding:20px; }
+.hidden { display:none; }
 
 .question { font-size:18px; margin-bottom:16px; }
-
-.choices {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
+.choices { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .choice {
   padding:14px;
   border-radius:10px;
@@ -42,44 +30,32 @@ h1 { font-size: 22px; margin-bottom: 6px; }
   cursor:pointer;
 }
 
-.hidden { display:none; }
-
 .result-title { font-size:20px; margin-bottom:6px; }
 .result-sub { font-size:14px; color:#666; margin-bottom:12px; }
 
 .recommend { margin:12px 0 16px; }
 .recommend-toggle {
-  background:none;
-  border:none;
-  font-size:14px;
-  color:#555;
-  cursor:pointer;
+  background:none; border:none;
+  font-size:14px; color:#555; cursor:pointer;
 }
-.recommend-toggle:hover { text-decoration: underline; }
+.recommend-toggle:hover { text-decoration:underline; }
 .recommend-body { font-size:14px; line-height:1.7; margin-top:8px; }
 
 .pg-list { display:grid; gap:12px; }
 .pg { border:1px solid #ddd; border-radius:10px; padding:14px; }
 .pg-name { font-weight:bold; margin-bottom:6px; }
 .pg-name a { color:#222; text-decoration:underline; }
-
 .tags { font-size:13px; color:#666; }
 .tags span { margin-right:6px; cursor:default; }
 
 .back-top { margin-top:20px; text-align:center; }
 .restart-btn {
   background:none; border:none;
-  font-size:14px; color:#555;
-  cursor:pointer;
+  font-size:14px; color:#555; cursor:pointer;
 }
 .restart-btn:hover { text-decoration:underline; }
 
-footer {
-  margin-top:32px;
-  font-size:12px;
-  color:#777;
-  text-align:center;
-}
+footer { margin-top:32px; font-size:12px; color:#777; text-align:center; }
 </style>
 </head>
 
@@ -91,17 +67,16 @@ footer {
   <div id="card" class="card"></div>
   <div id="result" class="hidden"></div>
 
-  <footer>
-    ※最終の結果画面から公式サイトの作品ページへ遷移します
-  </footer>
+  <footer>※最終の結果画面から公式サイトの作品ページへ遷移します</footer>
 </div>
 
 <script>
-(function(){
+const card = document.getElementById("card");
+const result = document.getElementById("result");
 
+/* ===== 結果データ ===== */
 const results = {
-  A:{ title:"ゲストみんなとの一体感",
-      sub:"笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
+  A:{ title:"ゲストみんなとの一体感", sub:"笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
       recommend:"みんなとの時間が何より大事な方へ。",
       photographers:[
         {name:"Kenji",url:"https://www.la-viephoto.com/photo_g/kenji",tags:["#アーティスティック","#モード"]},
@@ -109,8 +84,7 @@ const results = {
         {name:"HARUKI",url:"https://www.la-viephoto.com/photo_g/haruki",tags:["#しっとり"]},
         {name:"Hibino",url:"https://www.la-viephoto.com/photo_g/hibino",tags:["#エモーショナル"]}
       ]},
-  B:{ title:"自然体なふたりらしさを重視",
-      sub:"無理せず、いつもの自分たちで過ごせるPGタイプ",
+  B:{ title:"自然体なふたりらしさを重視", sub:"無理せず、いつもの自分たちで過ごせるPGタイプ",
       recommend:"リラックスして撮影したい方へ。",
       photographers:[
         {name:"akane",url:"https://www.la-viephoto.com/photo_g/akane",tags:["#自然体"]},
@@ -118,8 +92,7 @@ const results = {
         {name:"Kacchan",url:"https://www.la-viephoto.com/photo_g/Kacchan",tags:["#温かさ"]},
         {name:"tsukasa",url:"https://www.la-viephoto.com/photo_g/tsukasa",tags:["#鮮やか"]}
       ]},
-  C:{ title:"独自の世界観に導いてくれる",
-      sub:"作品として残したいあなたへ",
+  C:{ title:"独自の世界観に導いてくれる", sub:"作品として残したいあなたへ",
       recommend:"非日常感や演出を楽しみたい方へ。",
       photographers:[
         {name:"shinomiya",url:"https://www.la-viephoto.com/photo_g/shinomiya",tags:["#世界観"]},
@@ -127,8 +100,7 @@ const results = {
         {name:"naoya",url:"https://www.la-viephoto.com/photo_g/naoya-sugimoto",tags:["#美しさ"]},
         {name:"toro",url:"https://www.la-viephoto.com/photo_g/toro",tags:["#光"]}
       ]},
-  D:{ title:"寄り添い、安心感で包み込む",
-      sub:"穏やかに過ごしたいあなたへ",
+  D:{ title:"寄り添い、安心感で包み込む", sub:"穏やかに過ごしたいあなたへ",
       recommend:"丁寧に寄り添ってほしい方へ。",
       photographers:[
         {name:"TATSUYA",url:"https://www.la-viephoto.com/photo_g/tatsuya",tags:["#安心感"]},
@@ -137,10 +109,8 @@ const results = {
       ]}
 };
 
-const card = document.getElementById("card");
-const result = document.getElementById("result");
-
-function q(text, choices, cb){
+/* ===== 共通描画 ===== */
+function showQuestion(text, choices, handlers){
   card.classList.remove("hidden");
   result.classList.add("hidden");
   card.innerHTML = `
@@ -150,7 +120,7 @@ function q(text, choices, cb){
     </div>
   `;
   card.querySelectorAll(".choice").forEach(b=>{
-    b.onclick=()=>cb(Number(b.dataset.i));
+    b.onclick = ()=>handlers[Number(bdataset.i);
   });
 }
 
@@ -168,4 +138,66 @@ function showResult(key){
       <div class="pg-list">
         ${r.photographers.map(p=>`
           <div class="pg">
-            <div class="pg-name"><a href="${p.url}" target="_blank       <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div>
+            <div class="pg-name"><{p.url}${p.name}</a></div>
+            <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div>
+          </div>
+        `).join("")}
+      </div>
+      <div class="back-top"><button class="restart-btn">↺ 質問の最初に戻る</button></div>
+    </div>
+  `;
+  result.classList.remove("hidden");
+
+  result.querySelector(".recommend-toggle").onclick=function(){
+    const b=result.querySelector(".recommend-body");
+    b.classList.toggle("hidden");
+    this.textContent=b.classList.contains("hidden")
+      ?"▷ こんなあなたにおすすめ（←ここをタップ）"
+      :"▼ 閉じる";
+  };
+  result.querySelector(".restart-btn").onclick=start;
+}
+
+/* ===== 質問定義 ===== */
+function q1(){
+  showQuestion(
+    "写真を見返した時、大切にしたいのは？",
+    ["感情／温かさ／物語","おしゃれ／世界観／美しさ"],
+    [q2, q3]
+  );
+}
+function q2(){
+  showQuestion(
+    "結婚式で大切なポイントは？",
+    ["ゲストとの時間や空気感","ありのまま、自然体なふたりらしさ"],
+    [q4, q4]
+  );
+}
+function q3(){
+  showQuestion(
+    "どんなフォトグラファーと過ごしたい？",
+    ["世界観で導いてくれる","寄り添ってくれる"],
+    [q5, q5]
+  );
+}
+function q4(){
+  showQuestion(
+    "写真の雰囲気の好みは？",
+    ["にぎやか・笑顔","やわらかさ・自然"],
+    [()=>showResult("A"), ()=>showResult("B")]
+  );
+}
+function q5(){
+  showQuestion(
+    "写真の仕上がりの好みは？",
+    ["ドラマチック","シンプル"],
+    [()=>showResult("C"), ()=>showResult("D")]
+  );
+}
+
+/* ===== スタート ===== */
+function start(){ q1(); }
+window.onload = start;
+</script>
+</body>
+</html>
