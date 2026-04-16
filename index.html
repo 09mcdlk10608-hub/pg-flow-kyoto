@@ -94,24 +94,44 @@ function q1() {
 function q2() {
   showQuestion(
     "結婚式で大切なポイントは？",
-    "ゲストとの時間",
-    "自然体",
-    () => showResult("結果A"),
-    () => showResult("結果B")
+    "ゲストとの時間や空気感",
+    "ありのまま、自然体なふたりらしさ",
+    q4,
+    q4   // AでもBでも → Q4へ
   );
 }
 
 function q3() {
   showQuestion(
     "どんなフォトグラファーと過ごしたい？",
-    "世界観",
-    "寄り添い",
-    () => showResult("結果C"),
-    () => showResult("結果D")
+    "独自の世界観でふたりを導いてくれる",
+    "落ち着いた、寄り添ってくれる",
+    q5,
+    q5   // AでもBでも → Q5へ
   );
 }
 
-/* ---------- 開始 ---------- */
+function q4() {
+  showQuestion(
+    "写真の雰囲気の好みは？",
+    "にぎやか・笑顔・ドキュメンタリー",
+    "やわらかさ・自然・空気感",
+    () => showResult("A"),
+    () => showResult("B")
+  );
+}
+
+function q5() {
+  showQuestion(
+    "写真の仕上がりの好みは？",
+    "ドラマチック・印象的",
+    "シンプル・上品・落ち着いた",
+    () => showResult("C"),
+    () => showResult("D")
+  );
+}
+
+/* ---------- スタート ---------- */
 window.onload = q1;
 </script>
 </body>
