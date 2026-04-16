@@ -2,38 +2,91 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PG指名フローチャート（京都店）</title>
 
 <style>
 body {
   font-family: system-ui, -apple-system,
-  "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo", sans-serif;
-  margin:0; background:#fff; color:#222;
+    "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo", sans-serif;
+  margin: 0;
+  background: #fff;
+  color: #222;
 }
-.wrap { max-width:760px; margin:0 auto; padding:24px 16px 40px; }
-h1 { font-size:22px; margin-bottom:6px; }
-.sub { font-size:14px; color:#666; margin-bottom:16px; }
 
-.card { border:1px solid #ddd; border-radius:10px; padding:20px; }
-.hidden { display:none; }
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
 
-.question { font-size:18px; margin-bottom:16px; }
-.choices { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+h1 { font-size: 22px; margin-bottom: 6px; }
+.sub { font-size: 14px; color:#666; margin-bottom: 16px; }
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.hidden { display: none; }
+
+.question { font-size: 18px; margin-bottom: 16px; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
 .choice {
-  padding:14px; border-radius:10px;
-  border:1px solid #ccc; background:#fafafa; cursor:pointer;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  cursor: pointer;
 }
 
-.result-title { font-size:20px; margin-bottom:6px; }
-.result-sub { font-size:14px; color:#666; margin-bottom:12px; }
+.result-title { font-size: 20px; margin-bottom: 6px; }
+.result-sub { font-size: 14px; color:#666; margin-bottom: 12px; }
 
-.pg { border:1px solid #ddd; border-radius:10px; padding:14px; margin-bottom:12px; }
-.pg-name { font-weight:bold; margin-bottom:6px; }
-.pg-name a { color:#222; text-decoration:underline; }
-.tags { font-size:13px; color:#666; }
+.recommend { margin: 12px 0 16px; }
+.recommend-toggle {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+.recommend-toggle:hover { text-decoration: underline; }
+.recommend-body {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 8px;
+}
 
-footer { margin-top:32px; font-size:12px; color:#777; text-align:center; }
+.pg-list { display: grid; gap: 12px; }
+.pg {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 14px;
+}
+.pg-name { font-weight: bold; margin-bottom: 6px; }
+.pg-name a { color:#222; text-decoration: underline; }
+.tags { font-size: 13px; color:#666; }
+.tags span { margin-right: 6px; cursor: default; }
+
+.back-top { margin-top: 20px; text-align: center; }
+.restart-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+.restart-btn:hover { text-decoration: underline; }
+
+footer {
+  margin-top: 32px;
+  font-size: 12px;
+  color: #777;
+  text-align: center;
+}
 </style>
 </head>
 
@@ -45,49 +98,141 @@ footer { margin-top:32px; font-size:12px; color:#777; text-align:center; }
   <div id="card" class="card"></div>
   <div id="result" class="hidden"></div>
 
-  <footer>※最終の結果画面から公式サイトの作品ページへ遷移します</footer>
+  <footer>
+    ※最終の結果画面から公式サイトの作品ページへ遷移します
+  </footer>
 </div>
 
 <script>
 const card = document.getElementById("card");
 const result = document.getElementById("result");
 
-/* ---------- 共通描画 ---------- */
-function showQuestion(text, aText, bText, onA, onB) {
+/* ===== 結果データ ===== */
+const results = {
+  A: {
+    title: "ゲストみんなとの一体感",
+    sub: "笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
+    recommend: "みんなとの時間が何より大事な方へ。",
+    photographers: [
+      { name:"Kenji", url:"https://www.la-viephoto.com/photo_g/kenji", tags:["#アーティスティック","#モード","#フレンドリー","#ハートフル"] },
+      { name:"yumico", url:"https://www.la-viephoto.com/photo_g/yumico", tags:["#ハッピー","#ドキュメンタリー","#フレンドリー","#アットホーム"] },
+      { name:"HARUKI", url:"https://www.la-viephoto.com/photo_g/haruki", tags:["#しっとり","#フレンドリー","#大人っぽさ","#アットホーム"] },
+      { name:"Hibino", url:"https://www.la-viephoto.com/photo_g/hibino", tags:["#ハートフル","#おしゃれ","#ハッピー","#エモーショナル"] }
+    ]
+  },
+  B: {
+    title: "自然体なふたりらしさを重視",
+    sub: "無理せず、いつもの自分たちで過ごせるPGタイプ",
+    recommend: "リラックスして撮影したい方へ。",
+    photographers: [
+      { name:"akane", url:"https://www.la-viephoto.com/photo_g/akane", tags:["#自然体","#いつものふたり","#笑顔","#安心感"] },
+      { name:"unio", url:"https://www.la-viephoto.com/photo_g/unio", tags:["#王道","#ナチュラル","#ポージング","#フレンドリー"] },
+      { name:"Kacchan", url:"https://www.la-viephoto.com/photo_g/Kacchan", tags:["#温かさ","#空気感","#ふたりらしさ","#寄り添う"] },
+      { name:"tsukasa", url:"https://www.la-viephoto.com/photo_g/tsukasa", tags:["#フレンドリー","#ポージング","#シャープ","#鮮やかさ"] }
+    ]
+  },
+  C: {
+    title: "独自の世界観に導いてくれる",
+    sub: "特別な一日を“作品”として残したいあなたへ",
+    recommend: "世界観や演出を楽しみたい方へ。",
+    photographers: [
+      { name:"shinomiya", url:"https://www.la-viephoto.com/photo_g/shinomiya", tags:["#エモーショナル","#おしゃれ","#空気感","#しっとり"] },
+      { name:"TAIHEI", url:"https://www.la-viephoto.com/photo_g/taihei", tags:["#モード","#シック","#大人っぽい","#非日常"] },
+      { name:"naoya", url:"https://www.la-viephoto.com/photo_g/naoya-sugimoto", tags:["#大人っぽい","#しっとり","#美しさ","#フレンドリー"] },
+      { name:"toro", url:"https://www.la-viephoto.com/photo_g/toro", tags:["#きれいめ","#ポージング","#繊細な光","#親しみやすさ"] }
+    ]
+  },
+  D: {
+    title: "寄り添い、安心感で包み込む",
+    sub: "穏やかに過ごしたいあなたへ",
+    recommend: "丁寧に寄り添ってほしい方へ。",
+    photographers: [
+      { name:"TATSUYA", url:"https://www.la-viephoto.com/photo_g/tatsuya", tags:["#穏やか","#ポージング","#透明感","#安心感"] },
+      { name:"KIZ", url:"https://www.la-viephoto.com/photo_g/kiz", tags:["#作品性","#美しい構図","#落ち着く","#安心感"] },
+      { name:"imani", url:"https://www.la-viephoto.com/photo_g/imani", tags:["#やわらかさ","#あたたかさ","#ふんわり","#穏やか"] }
+    ]
+  }
+};
+
+/* ===== 共通描画 ===== */
+function showQuestion(text, aText, bText, onA, onB, showBack) {
   card.classList.remove("hidden");
   result.classList.add("hidden");
 
   card.innerHTML = `
     <div class="question">${text}</div>
     <div class="choices">
-      <button id="btnA" class="choice">${aText}</button>
-      <button id="btnB" class="choice">${bText}</button>
+      <button class="choice" id="btnA">${aText}</button>
+      <button class="choice" id="btnB">${bText}</button>
     </div>
+    ${showBack ? `
+      <div class="back-top">
+        <button class="restart-btn">↺ 質問の最初に戻る</button>
+      </div>` : ``}
   `;
 
   document.getElementById("btnA").onclick = onA;
   document.getElementById("btnB").onclick = onB;
+
+  if (showBack) {
+    card.querySelector(".restart-btn").onclick = q1;
+  }
 }
 
-function showResult(title) {
+function showResult(key) {
   card.classList.add("hidden");
+  const r = results[key];
+
   result.innerHTML = `
     <div class="card">
-      <div class="result-title">${title}</div>
-      <p>（ここに最終結果を表示）</p>
+      <div class="result-title">${r.title}</div>
+      <div class="result-sub">${r.sub}</div>
+
+      <div class="recommend">
+        <button class="recommend-toggle">▷ こんなあなたにおすすめ（←ここをタップ）</button>
+        <div class="recommend-body hidden">${r.recommend}</div>
+      </div>
+
+      <div class="pg-list">
+        ${r.photographers.map(p => `
+          <div class="pg">
+            <div class="pg-name">
+              <a href="${p.url}" target         </div>
+            <div class="tags">
+              ${p.tags.map(t => `<span>${t}</span>`).join("")}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="back-top">
+        <button class="restart-btn">↺ 質問の最初に戻る</button>
+      </div>
     </div>
   `;
+
   result.classList.remove("hidden");
+
+  result.querySelector(".recommend-toggle").onclick = function(){
+    const b = result.querySelector(".recommend-body");
+    b.classList.toggle("hidden");
+    this.textContent = b.classList.contains("hidden")
+      ? "▷ こんなあなたにおすすめ（←ここをタップ）"
+      : "▼ 閉じる";
+  };
+
+  result.querySelector(".restart-btn").onclick = q1;
 }
 
-/* ---------- 質問定義 ---------- */
+/* ===== 質問定義 ===== */
 function q1() {
   showQuestion(
     "写真を見返した時、大切にしたいのは？",
     "感情／温かさ／物語",
     "おしゃれ／世界観／美しさ",
     q2,
-    q3
+    q3,
+    false
   );
 }
 
@@ -97,7 +242,8 @@ function q2() {
     "ゲストとの時間や空気感",
     "ありのまま、自然体なふたりらしさ",
     q4,
-    q4   // AでもBでも → Q4へ
+    q4,
+    true
   );
 }
 
@@ -107,7 +253,8 @@ function q3() {
     "独自の世界観でふたりを導いてくれる",
     "落ち着いた、寄り添ってくれる",
     q5,
-    q5   // AでもBでも → Q5へ
+    q5,
+    true
   );
 }
 
@@ -117,7 +264,8 @@ function q4() {
     "にぎやか・笑顔・ドキュメンタリー",
     "やわらかさ・自然・空気感",
     () => showResult("A"),
-    () => showResult("B")
+    () => showResult("B"),
+    true
   );
 }
 
@@ -127,11 +275,12 @@ function q5() {
     "ドラマチック・印象的",
     "シンプル・上品・落ち着いた",
     () => showResult("C"),
-    () => showResult("D")
+    () => showResult("D"),
+    true
   );
 }
 
-/* ---------- スタート ---------- */
+/* ===== スタート ===== */
 window.onload = q1;
 </script>
 </body>
