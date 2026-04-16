@@ -134,6 +134,23 @@
       color: #777;
       text-align: center;
     }
+
+    .back-top {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.restart-btn {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.restart-btn:hover {
+  text-decoration: underline;
+}
   </style>
 </head>
 
@@ -234,11 +251,17 @@
     card.classList.remove("hidden");
     result.classList.add("hidden");
 
-    card.innerHTML = `
+card.innerHTML = `
   <div class="question">${text}</div>
   <div class="choices">
     ${choices.map((c,i)=>`<button class="choice" data-i="${i}">${c}</button>`).join("")}
   </div>
+
+  <div class="back-top">
+    <button class="restart-btn">↺ 質問の最初に戻る</button>
+  </div>
+`;
+``
 
   <div class="back-top">
     <button class="restart-btn">↺ 質問の最初に戻る</button>
