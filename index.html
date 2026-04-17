@@ -13,13 +13,11 @@ body {
   background: #fff;
   color: #222;
 }
-
 .wrap {
   max-width: 760px;
   margin: 0 auto;
   padding: 24px 16px 40px;
 }
-
 h1 { font-size: 22px; margin-bottom: 6px; }
 .sub { font-size: 14px; color:#666; margin-bottom: 16px; }
 
@@ -28,17 +26,14 @@ h1 { font-size: 22px; margin-bottom: 6px; }
   border-radius: 10px;
   padding: 20px;
 }
-
 .hidden { display:none; }
 
 .question { font-size: 18px; margin-bottom: 16px; }
-
 .choices {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
-
 .choice {
   padding: 14px;
   border-radius: 10px;
@@ -71,7 +66,6 @@ h1 { font-size: 22px; margin-bottom: 6px; }
   border-radius:10px;
   padding:14px;
 }
-
 .pg-name {
   font-weight:bold;
   margin-bottom:6px;
@@ -80,7 +74,6 @@ h1 { font-size: 22px; margin-bottom: 6px; }
   color:#222;
   text-decoration: underline;
 }
-
 .tags {
   font-size:13px;
   color:#666;
@@ -88,7 +81,7 @@ h1 { font-size: 22px; margin-bottom: 6px; }
 .tags span {
   margin-right:6px;
   cursor:default;
-  pointer-events: none; /* ← 保険 */
+  pointer-events: none;
 }
 
 .back-top {
@@ -172,15 +165,16 @@ const results = {
     photographers:[
       {name:"TATSUYA", url:"https://www.la-viephoto.com/photo_g/tatsuya", tags:["#穏やか","#ポージング","#透明感","#安心感"]},
       {name:"KIZ", url:"https://www.la-viephoto.com/photo_g/kiz", tags:["#作品性","#美しい構図","#落ち着く","#安心感"]},
-      {name:"imani", url:"https://www.la-viephoto.com/photo_g/imani", tags:["#やわらかさ","#あたたかさ","#ふんわり","#穏やか"] }
+      {name:"imani", url:"https://www.la-viephoto.com/photo_g/imani", tags:["#やわらかさ","#あたたかさ","#ふんわり","#穏やか"]}
     ]
   }
 };
 
-/* ===== 共通描画 ===== */
+/* ===== 質問表示 ===== */
 function showQuestion(text,aText,bText,onA,onB,showBack){
   card.classList.remove("hidden");
   result.classList.add("hidden");
+
   card.innerHTML = `
     <div class="question">${text}</div>
     <div class="choices">
@@ -189,13 +183,16 @@ function showQuestion(text,aText,bText,onA,onB,showBack){
     </div>
     ${showBack ? `<div class="back-top"><button class="restart-btn">↺ 質問の最初に戻る</button></div>` : ``}
   `;
+
   document.getElementById("btnA").onclick = onA;
   document.getElementById("btnB").onclick = onB;
+
   if (showBack) {
-    card.querySelector(".restart-btn").onclick = () => q1();
+    card.querySelector(".restart-btn").onclick = q1;
   }
 }
 
+/* ===== 結果表示（DOM生成） ===== */
 function showResult(key){
   card.classList.add("hidden");
   const r = results[key];
@@ -210,18 +207,7 @@ function showResult(key){
         <div class="recommend-body hidden">${r.recommend}</div>
       </div>
 
-      <div class="pg-list">
-        ${r.photographers.map(p=>`
-          <div class="pg">
-            <div class="pg-name">
-              <a href}${p.name}</a>
-            </div>
-            <div class="tags">
-              ${p.tags.map(t=>`<span>${t}</span>`).join("")}
-            </div>
-          </div>
-        `).join("")}
-      </div>
+      <div class="pg-list"></div>
 
       <div class="back-top">
         <button class="restart-btn">↺ 質問の最初に戻る</button>
@@ -230,9 +216,35 @@ function showResult(key){
   `;
   result.classList.remove("hidden");
 
+  const list = result.querySelector(".pg-list");
+
+  r.photographers.forEach(p=>{
+    const pg = document.createElement("div");
+    pg.className = "pg";
+
+    const name = document.createElement("div");
+    name.className = "pg-name";
+    const link = document.createElement("a");
+    link.href = p.url;
+    link.target = "_blank";
+    link.textContent = p.name;
+    name.appendChild(link);
+
+    const tags = document.createElement("div");
+    tags.className = "tags";
+    p.tags.forEach(t=>{
+      const span = document.createElement("span");
+      span.textContent = t;
+      tags.appendChild(span);
+    });
+
+    pg.appendChild(name);
+    pg.appendChild(tags);
+    list.appendChild(pg);
+  });
+
   const toggle = result.querySelector(".recommend-toggle");
-  toggle.onclick = (e)=>{
-    e.stopPropagation();
+  toggle.onclick = ()=>{
     const body = result.querySelector(".recommend-body");
     body.classList.toggle("hidden");
     toggle.textContent = body.classList.contains("hidden")
@@ -240,11 +252,7 @@ function showResult(key){
       : "▼ こんなあなたにおすすめ（←閉じる）";
   };
 
-  result.querySelector(".restart-btn").onclick = (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    q1();
-  };
+  result.querySelector(".restart-btn").onclick = q1;
 }
 
 /* ===== 質問定義 ===== */
@@ -253,7 +261,7 @@ function q1(){
     "写真を見返した時、大切にしたいのは？",
     "感情／温かさ／物語",
     "おしゃれ／世界観／美しさ",
-    q2, q3, false
+    q2,q3,false
   );
 }
 function q2(){
@@ -261,7 +269,7 @@ function q2(){
     "結婚式で大切なポイントは？",
     "ゲストとの時間や空気感",
     "ありのまま、自然体なふたりらしさ",
-    q4, q4, true
+    q4,q4,true
   );
 }
 function q3(){
@@ -269,7 +277,7 @@ function q3(){
     "どんなフォトグラファーと過ごしたい？",
     "独自の世界観でふたりを導いてくれる",
     "落ち着いた、寄り添ってくれる",
-    q5, q5, true
+    q5,q5,true
   );
 }
 function q4(){
