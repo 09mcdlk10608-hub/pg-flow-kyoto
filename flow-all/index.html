@@ -24,6 +24,7 @@ h2 {
   color: #666;
 }
 
+/* ===== 通常ボタン ===== */
 button {
   display: block;
   margin: 8px auto;
@@ -33,17 +34,29 @@ button {
   max-width: 300px;
 }
 
+/* ===== 最初に戻る ===== */
 .reset-btn {
   margin-top: 20px;
+  background: none;
+  color: #555;
+  border: none;
+  width: auto;     /* ←幅を自動に */
+  padding: 0;      /* ←ボタン感を消す */
+  text-decoration: underline;
 }
 
+/* ===== PG/VG戻る ===== */
 .top-btn {
   margin-top: 30px;
   background: #555;
   color: #fff;
   border: none;
+  width: auto;         /* ←ここが重要 */
+  padding: 10px 16px;  /* ←コンパクト */
+  display: inline-block; /* ←文字幅にする */
 }
 
+/* ===== トグル ===== */
 .toggle {
   margin: 20px 0 10px;
   font-weight: bold;
