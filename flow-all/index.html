@@ -16,9 +16,6 @@ button {
   margin: 10px auto;
   padding: 12px 20px;
 }
-.hidden {
-  display: none;
-}
 </style>
 </head>
 
@@ -87,7 +84,7 @@ const results = {
   },
   D: {
     title: "エンタメ盛り上げ型",
-    text: ["ワイワワイ楽しく", "一体感を大切に"],
+    text: ["ワイワイ楽しく", "一体感を大切に"],
     members: ["naoki","meisei"]
   }
 };
@@ -114,17 +111,19 @@ function showQuestion(i) {
     app.appendChild(btn);
   });
 
-  // ↓最初に戻る
+  // 最初に戻る
   const back = document.createElement("button");
   back.textContent = "↺ 最初に戻る";
   back.onclick = ()=> showQuestion(0);
   app.appendChild(back);
 
-  // ↓TOPに戻る（追加）
-  const topBtn = document.createElement("button");
-  topBtn.textContent = "← TOPに戻る";
-  topBtn.onclick = ()=> location.href = "../select/";
-  app.appendChild(topBtn);
+  // ✅ Q1だけTOP表示
+  if (i === 0) {
+    const topBtn = document.createElement("button");
+    topBtn.textContent = "← PG / VG選択に戻る";
+    topBtn.onclick = ()=> location.href = "../select/";
+    app.appendChild(topBtn);
+  }
 }
 
 // ===== 結果表示 =====
@@ -147,15 +146,15 @@ function showResult() {
     app.appendChild(div);
   });
 
-  // ↓最初に戻る
+  // 最初に戻る
   const back = document.createElement("button");
   back.textContent = "↺ 最初に戻る";
   back.onclick = ()=> showQuestion(0);
   app.appendChild(back);
 
-  // ↓TOPに戻る（追加）
+  // ✅ 結果ページにも表示
   const topBtn = document.createElement("button");
-  topBtn.textContent = "← TOPに戻る";
+  topBtn.textContent = "← PG / VG選択に戻る";
   topBtn.onclick = ()=> location.href = "../select/";
   app.appendChild(topBtn);
 }
