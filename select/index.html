@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>診断選択</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  text-align: center;
+  padding: 40px;
+}
+button {
+  display: block;
+  margin: 15px auto;
+  padding: 16px 24px;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>診断を選択してください</h2>
+
+<button onclick="goPG()">📷 フォトグラファー診断</button>
+<button onclick="goVG()">🎥 ビデオグラファー診断</button>
+
+<script>
+function goPG() {
+  // 既存PGに移動
+  window.location.href = "../";
+}
+
+function goVG() {
+  // VGチャートに移動
+  window.location.href = "../flow-all/";
+}
+</script>
+
+</body>
+</html>
