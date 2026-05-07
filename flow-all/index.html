@@ -10,11 +10,37 @@ body {
   font-family: sans-serif;
   text-align: center;
   padding: 20px;
+  line-height: 1.6;
 }
+
+h2 {
+  margin-bottom: 10px;
+}
+
+.catch {
+  margin-bottom: 20px;
+  color: #555;
+}
+
 button {
   display: block;
   margin: 10px auto;
   padding: 12px 20px;
+  font-size: 15px;
+}
+
+.toggle {
+  margin: 20px 0 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.member {
+  margin: 5px 0;
 }
 </style>
 </head>
@@ -65,26 +91,42 @@ const questions = [
   }
 ];
 
-// ===== 結果 =====
+// ===== 結果（本番版）=====
 const results = {
   A: {
     title: "シネマティック没入型",
-    text: ["映画のような世界観を大切に", "落ち着いた空気感で撮影したい方"],
+    catch: "― 映画のような世界観に浸りたいあなたへ ―",
+    text: [
+      "映像の流れや演出を大切にし、感情まで丁寧に残したい。",
+      "落ち着いた空気感の中で、一本の作品として結婚式を記録したい方。"
+    ],
     members: ["takeki","hissan","Tokky","kose"]
   },
   B: {
     title: "ナチュラルストーリー型",
-    text: ["自然な感情を大切に", "楽しさと感動のバランス重視"],
+    catch: "― 自然な感情と楽しさをそのまま残したいあなたへ ―",
+    text: [
+      "作り込みすぎず、その日の出来事や想いをやさしく映像に残したい。",
+      "明るさも感動も、バランスよく楽しみたい方。"
+    ],
     members: ["kazuma","anri"]
   },
   C: {
     title: "ドキュメンタリー空気型",
-    text: ["ありのままの空気を残す", "ナチュラルに記録したい方"],
+    catch: "― 当日の空気感をありのまま残したいあなたへ ―",
+    text: [
+      "演出よりも、その場に流れていた本物の雰囲気を大切にしたい。",
+      "後から見返したとき、自然に思い出がよみがえる映像が理想の方。"
+    ],
     members: ["Ryo","tamo","zono","kira"]
   },
   D: {
     title: "エンタメ盛り上げ型",
-    text: ["ワイワイ楽しく", "一体感を大切に"],
+    catch: "― みんなで楽しむ一日を全力で残したいあなたへ ―",
+    text: [
+      "ゲストとの一体感や盛り上がりを、楽しくテンポよく残したい。",
+      "ビデオグラファーにも一緒に空気を楽しんでほしい方。"
+    ],
     members: ["naoki","meisei"]
   }
 };
@@ -93,6 +135,7 @@ const results = {
 function showQuestion(i) {
   const q = questions[i];
   const app = document.getElementById("app");
+
   app.innerHTML = "<h2>"+q.q+"</h2>";
 
   q.a.forEach(choice=>{
@@ -111,13 +154,11 @@ function showQuestion(i) {
     app.appendChild(btn);
   });
 
-  // 最初に戻る
   const back = document.createElement("button");
   back.textContent = "↺ 最初に戻る";
   back.onclick = ()=> showQuestion(0);
   app.appendChild(back);
 
-  // ✅ Q1だけTOP表示
   if (i === 0) {
     const topBtn = document.createElement("button");
     topBtn.textContent = "← PG / VG選択に戻る";
@@ -130,36 +171,57 @@ function showQuestion(i) {
 function showResult() {
   const r = answers[0][0];
   const data = results[r];
-
   const app = document.getElementById("app");
-  app.innerHTML = "<h2>"+data.title+"</h2>";
 
-  data.text.forEach(t=>{
-    const p = document.createElement("p");
-    p.textContent = t;
-    app.appendChild(p);
-  });
+  app.innerHTML = `
+    <h2>${data.title}</h2>
+    <div class="catch">${data.catch}</div>
+
+    <div class="toggle" onclick="toggleText()">
+      ▷ こんなあなたにおすすめ（←ここをタップ）
+    </div>
+
+    <div id="detail" class="hidden">
+      <p>${data.text[0]}</p>
+      <p>${data.text[1]}</p>
+    </div>
+
+    <h3>おすすめVG</h3>
+  `;
 
   data.members.forEach(name=>{
     const div = document.createElement("div");
+    div.className = "member";
     div.textContent = name;
     app.appendChild(div);
   });
 
-  // 最初に戻る
   const back = document.createElement("button");
   back.textContent = "↺ 最初に戻る";
   back.onclick = ()=> showQuestion(0);
   app.appendChild(back);
 
-  // ✅ 結果ページにも表示
   const topBtn = document.createElement("button");
   topBtn.textContent = "← PG / VG選択に戻る";
   topBtn.onclick = ()=> location.href = "../select/";
   app.appendChild(topBtn);
 }
 
-// 初期表示
+// ===== 開閉 =====
+function toggleText() {
+  const el = document.getElementById("detail");
+  const toggle = document.querySelector(".toggle");
+
+  if (el.classList.contains("hidden")) {
+    el.classList.remove("hidden");
+    toggle.textContent = "▼ こんなあなたにおすすめ（←閉じる）";
+  } else {
+    el.classList.add("hidden");
+    toggle.textContent = "▷ こんなあなたにおすすめ（←ここをタップ）";
+  }
+}
+
+// 初期
 showQuestion(0);
 </script>
 
