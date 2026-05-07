@@ -9,24 +9,28 @@
 body {
   font-family: sans-serif;
   text-align: center;
-  padding: 20px;
-  line-height: 1.6;
+  padding: 16px;
+  line-height: 1.5;
 }
 
 h2 {
-  margin-bottom: 10px;
+  margin: 10px 0;
+  font-size: 20px;
 }
 
 .catch {
-  margin-bottom: 20px;
-  color: #555;
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #666;
 }
 
 button {
   display: block;
-  margin: 10px auto;
-  padding: 12px 20px;
-  font-size: 15px;
+  margin: 8px auto;
+  padding: 12px;
+  font-size: 14px;
+  width: 90%;
+  max-width: 300px;
 }
 
 .toggle {
@@ -40,7 +44,7 @@ button {
 }
 
 .member {
-  margin: 5px 0;
+  margin: 4px 0;
 }
 
 #detail p {
@@ -56,46 +60,31 @@ button {
 <script>
 let answers = [];
 
-// ===== 質問 =====
+// 質問
 const questions = [
-  {
-    q: "映像の軸はどちらが近い？",
-    a: [
-      { text: "感動・ストーリー性", next: 1 },
-      { text: "楽しさ・雰囲気", next: 2 }
-    ]
-  },
-  {
-    q: "どんなテイストにしたい？",
-    a: [
-      { text: "シネマティック・エモい", next: 3 },
-      { text: "ナチュラル・明るい", next: 4 }
-    ]
-  },
-  {
-    q: "どんなVGがいい？",
-    a: [
-      { text: "落ち着いて見守る", next: 3 },
-      { text: "一緒に楽しむ", next: 4 }
-    ]
-  },
-  {
-    q: "映像へのこだわりは？",
-    a: [
-      { text: "しっかり作り込む", result: ["A","B"] },
-      { text: "自然さも大切", result: ["C","D"] }
-    ]
-  },
-  {
-    q: "理想の過ごし方は？",
-    a: [
-      { text: "ゆったり", result: ["A","D"] },
-      { text: "ワイワイ", result: ["B","D"] }
-    ]
-  }
+  { q: "映像の軸はどちらが近い？", a: [
+    { text: "感動・ストーリー性", next: 1 },
+    { text: "楽しさ・雰囲気", next: 2 }
+  ]},
+  { q: "どんなテイストにしたい？", a: [
+    { text: "シネマティック・エモい", next: 3 },
+    { text: "ナチュラル・明るい", next: 4 }
+  ]},
+  { q: "どんなVGがいい？", a: [
+    { text: "落ち着いて見守る", next: 3 },
+    { text: "一緒に楽しむ", next: 4 }
+  ]},
+  { q: "映像へのこだわりは？", a: [
+    { text: "しっかり作り込む", result: "A" },
+    { text: "自然さも大切", result: "C" }
+  ]},
+  { q: "理想の過ごし方は？", a: [
+    { text: "ゆったり", result: "A" },
+    { text: "ワイワイ", result: "B" }
+  ]}
 ];
 
-// ===== 結果（←ここを1行テキスト化）=====
+// 結果
 const results = {
   A: {
     title: "シネマティック没入型",
@@ -114,16 +103,9 @@ const results = {
     catch: "― 当日の空気感をありのまま残したいあなたへ ―",
     text: "その場の雰囲気を自然に残したい。<br>あとから思い出がよみがえる映像が理想の方。",
     members: ["Ryo","tamo","zono","kira"]
-  },
-  D: {
-    title: "エンタメ盛り上げ型",
-    catch: "― みんなで楽しむ一日を全力で残したいあなたへ ―",
-    text: "ゲストと一緒に楽しい時間を残したい。<br>一体感のある盛り上がりを大切にしたい方。",
-    members: ["naoki","meisei"]
   }
 };
 
-// ===== 質問表示 =====
 function showQuestion(i) {
   const q = questions[i];
   const app = document.getElementById("app");
@@ -138,8 +120,7 @@ function showQuestion(i) {
       if (choice.next !== undefined) {
         showQuestion(choice.next);
       } else {
-        answers = [choice.result]; // ← 安定化
-        showResult();
+        showResult(choice.result);
       }
     };
 
@@ -159,13 +140,11 @@ function showQuestion(i) {
   }
 }
 
-// ===== 結果表示 =====
-function showResult() {
-  const r = answers[0][0];
-  const data = results[r];
+function showResult(key) {
+  const data = results[key];
   const app = document.getElementById("app");
 
-  app.innerHTML = 
+  app.innerHTML = `
     <h2>${data.title}</h2>
     <div class="catch">${data.catch}</div>
 
@@ -178,7 +157,7 @@ function showResult() {
     </div>
 
     <h3>おすすめVG</h3>
-  ;
+  `;
 
   data.members.forEach(name => {
     const div = document.createElement("div");
@@ -198,7 +177,6 @@ function showResult() {
   app.appendChild(topBtn);
 }
 
-// ===== 開閉 =====
 function toggleText() {
   const el = document.getElementById("detail");
   const toggle = document.querySelector(".toggle");
