@@ -165,7 +165,7 @@ function showResult() {
   const data = results[r];
   const app = document.getElementById("app");
 
-  app.innerHTML = `
+  app.innerHTML = 
     <h2>${data.title}</h2>
     <div class="catch">${data.catch}</div>
 
@@ -178,7 +178,7 @@ function showResult() {
     </div>
 
     <h3>おすすめVG</h3>
-  `;
+  ;
 
   data.members.forEach(name => {
     const div = document.createElement("div");
