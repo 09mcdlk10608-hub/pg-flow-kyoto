@@ -147,16 +147,17 @@ function showQuestion(i) {
     app.appendChild(btn);
   });
 
-  const back = document.createElement("button");
-  back.textContent = "↺ 最初に戻る";
-  back.onclick = () => showQuestion(0);
-  app.appendChild(back);
+const back = document.createElement("button");
+back.textContent = "↺ 最初に戻る";
+back.className = "reset-btn";   // ←これ追加
+back.onclick = () => showQuestion(0);
+app.appendChild(back);
 
-  if (i === 0) {
-    const topBtn = document.createElement("button");
-    topBtn.textContent = "← PG / VG選択に戻る";
-    topBtn.onclick = () => location.href = "../select/";
-    app.appendChild(topBtn);
+const topBtn = document.createElement("button");
+topBtn.textContent = "← PG / VG選択に戻る";
+topBtn.className = "top-btn";  // ←これ追加
+topBtn.onclick = () => location.href = "../select/";
+app.appendChild(topBtn);
   }
 }
 
