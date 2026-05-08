@@ -24,7 +24,7 @@ h2 {
   color: #666;
 }
 
-/* ===== 通常ボタン ===== */
+/* 通常ボタン */
 button {
   display: block;
   margin: 8px auto;
@@ -34,29 +34,29 @@ button {
   max-width: 300px;
 }
 
-/* ===== 最初に戻る ===== */
+/* 最初に戻る */
 .reset-btn {
   margin-top: 20px;
   background: none;
   color: #555;
   border: none;
-  width: auto;     /* ←幅を自動に */
-  padding: 0;      /* ←ボタン感を消す */
+  width: auto;
+  padding: 0;
   text-decoration: underline;
 }
 
-/* ===== PG/VG戻る ===== */
+/* PG/VG選択に戻る */
 .top-btn {
   margin-top: 30px;
   background: #555;
   color: #fff;
   border: none;
-  width: auto;         /* ←ここが重要 */
-  padding: 10px 16px;  /* ←コンパクト */
-  display: inline-block; /* ←文字幅にする */
+  width: auto;
+  padding: 10px 16px;
+  display: inline-block;
 }
 
-/* ===== トグル ===== */
+/* トグル */
 .toggle {
   margin: 20px 0 10px;
   font-weight: bold;
@@ -86,7 +86,6 @@ button {
 <div id="app"></div>
 
 <script>
-// ===== 質問 =====
 const questions = [
   {
     q: "映像の軸はどちらが近い？",
@@ -112,20 +111,20 @@ const questions = [
   {
     q: "映像へのこだわりは？",
     a: [
-      { text: "しっかり作り込む", result: "A" },
-      { text: "自然さも大切", result: "C" }
+      { text: "しっかり作り込む", result: ["A","B"] },
+      { text: "自然さも大切", result: ["C","D"] }
     ]
   },
   {
     q: "理想の過ごし方は？",
     a: [
-      { text: "ゆったり", result: "A" },
-      { text: "ワイワイ", result: "B" }
+      { text: "ゆったり", result: ["A","C"] },
+      { text: "ワイワイ", result: ["B","D"] }
     ]
   }
 ];
 
-// ===== 結果 =====
+// 結果データ
 const results = {
   A: {
     title: "シネマティック没入型",
@@ -144,10 +143,34 @@ const results = {
     catch: "― 当日の空気感をありのまま残したいあなたへ ―",
     text: "その場の雰囲気を自然に残したい。<br>思い出をそのまま残したい方。",
     members: ["Ryo","tamo","zono","kira"]
+  },
+  D: {
+    title: "エンタメ盛り上げ型",
+    catch: "― みんなで楽しむ一日を全力で残したいあなたへ ―",
+    text: "楽しい空気や一体感を残したい。<br>盛り上がり重視で記録したい方。",
+    members: ["naoki","meisei"]
   }
 };
 
-// ===== 表示 =====
+// URLマップ
+const urlMap = {
+  "takeki": "https://www.la-viephoto.com/photo_g/takeki-vg",
+  "hissan": "https://www.la-viephoto.com/photo_g/hissan-vg",
+  "Tokky": "https://www.la-viephoto.com/photo_g/tokky-vg",
+  "kose": "https://www.la-viephoto.com/photo_g/kose",
+  "kazuma": "https://www.la-viephoto.com/photo_g/kazuma-vg",
+  "anri": "https://www.la-viephoto.com/photo_g/anri",
+  "Ryo": "https://www.la-viephoto.com/photo_g/ryo-vg",
+  "tamo": "https://www.la-viephoto.com/photo_g/tamo-vg",
+  "zono": "https://www.la-viephoto.com/photo_g/zono-vg",
+  "kira": "https://www.la-viephoto.com/photo_g/kira",
+  "naoki": "https://www.la-viephoto.com/photo_g/naoki",
+  "meisei": ""
+};
+
+let answers = [];
+
+// 質問表示
 function showQuestion(i) {
   const app = document.getElementById("app");
   const q = questions[i];
@@ -162,23 +185,25 @@ function showQuestion(i) {
       if (choice.next !== undefined) {
         showQuestion(choice.next);
       } else {
-        showResult(choice.result);
+        answers.push(choice.result);
+        if (answers.length === 2) {
+          showResult();
+        }
       }
     };
 
     app.appendChild(btn);
   });
 
-  // 最初に戻る
   const resetBtn = document.createElement("button");
   resetBtn.textContent = "↺ 最初に戻る";
   resetBtn.className = "reset-btn";
   resetBtn.onclick = function() {
+    answers = [];
     showQuestion(0);
   };
   app.appendChild(resetBtn);
 
-  // Q1だけ表示
   if (i === 0) {
     const topBtn = document.createElement("button");
     topBtn.textContent = "← PG / VG選択に戻る";
@@ -190,9 +215,15 @@ function showQuestion(i) {
   }
 }
 
-function showResult(key) {
+// 結果表示
+function showResult() {
+  const list1 = answers[0];
+  const list2 = answers[1];
+
+  const final = list1.find(x => list2.includes(x));
+  const data = results[final];
+
   const app = document.getElementById("app");
-  const data = results[key];
 
   app.innerHTML =
     "<h2>" + data.title + "</h2>" +
@@ -201,46 +232,28 @@ function showResult(key) {
     "<div id='detail' class='hidden'><p>" + data.text + "</p></div>" +
     "<h3>おすすめVG</h3>";
 
-const urlMap = {
-  "takeki": "https://www.la-viephoto.com/photo_g/takeki-vg",
-  "hissan": "https://www.la-viephoto.com/photo_g/hissan-vg",
-  "Tokky": "https://www.la-viephoto.com/photo_g/tokky-vg",
-  "kose": "https://www.la-viephoto.com/photo_g/kose",
+  data.members.forEach(name => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "member";
 
-  "kazuma": "https://www.la-viephoto.com/photo_g/kazuma-vg",
-  "anri": "https://www.la-viephoto.com/photo_g/anri",
+    if (urlMap[name]) {
+      const link = document.createElement("a");
+      link.textContent = name;
+      link.href = urlMap[name];
+      link.target = "_blank";
+      wrapper.appendChild(link);
+    } else {
+      wrapper.textContent = name;
+    }
 
-  "Ryo": "https://www.la-viephoto.com/photo_g/ryo-vg",
-  "tamo": "https://www.la-viephoto.com/photo_g/tamo-vg",
-  "zono": "https://www.la-viephoto.com/photo_g/zono-vg",
-  "kira": "https://www.la-viephoto.com/photo_g/kira",
-
-  "naoki": "https://www.la-viephoto.com/photo_g/naoki",
-  "meisei": ""
-};
-
-data.members.forEach(name => {
-  const wrapper = document.createElement("div");
-  wrapper.className = "member";
-
-  if (urlMap[name]) {
-    const link = document.createElement("a");
-    link.textContent = name;
-    link.href = urlMap[name];
-    link.target = "_blank";
-    wrapper.appendChild(link);
-  } else {
-    // URL未設定（meisei）
-    wrapper.textContent = name;
-  }
-
-  app.appendChild(wrapper);
-});
+    app.appendChild(wrapper);
+  });
 
   const resetBtn = document.createElement("button");
   resetBtn.textContent = "↺ 最初に戻る";
   resetBtn.className = "reset-btn";
   resetBtn.onclick = function() {
+    answers = [];
     showQuestion(0);
   };
   app.appendChild(resetBtn);
@@ -254,17 +267,21 @@ data.members.forEach(name => {
   app.appendChild(topBtn);
 }
 
+// トグル
 function toggleText() {
   const el = document.getElementById("detail");
+  const toggle = document.querySelector(".toggle");
 
   if (el.classList.contains("hidden")) {
     el.classList.remove("hidden");
+    toggle.textContent = "▼ こんなあなたにおすすめ（←閉じる）";
   } else {
     el.classList.add("hidden");
+    toggle.textContent = "▷ こんなあなたにおすすめ（←ここをタップ）";
   }
 }
 
-// 初期
+// 初期表示
 showQuestion(0);
 </script>
 
