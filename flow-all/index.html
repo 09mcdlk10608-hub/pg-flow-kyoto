@@ -201,12 +201,41 @@ function showResult(key) {
     "<div id='detail' class='hidden'><p>" + data.text + "</p></div>" +
     "<h3>おすすめVG</h3>";
 
-  data.members.forEach(name => {
-    const div = document.createElement("div");
-    div.className = "member";
-    div.textContent = name;
-    app.appendChild(div);
-  });
+const urlMap = {
+  "takeki": "https://www.la-viephoto.com/photo_g/takeki-vg",
+  "hissan": "https://www.la-viephoto.com/photo_g/hissan-vg",
+  "Tokky": "https://www.la-viephoto.com/photo_g/tokky-vg",
+  "kose": "https://www.la-viephoto.com/photo_g/kose",
+
+  "kazuma": "https://www.la-viephoto.com/photo_g/kazuma-vg",
+  "anri": "https://www.la-viephoto.com/photo_g/anri",
+
+  "Ryo": "https://www.la-viephoto.com/photo_g/ryo-vg",
+  "tamo": "https://www.la-viephoto.com/photo_g/tamo-vg",
+  "zono": "https://www.la-viephoto.com/photo_g/zono-vg",
+  "kira": "https://www.la-viephoto.com/photo_g/kira",
+
+  "naoki": "https://www.la-viephoto.com/photo_g/naoki",
+  "meisei": ""
+};
+
+data.members.forEach(name => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "member";
+
+  if (urlMap[name]) {
+    const link = document.createElement("a");
+    link.textContent = name;
+    link.href = urlMap[name];
+    link.target = "_blank";
+    wrapper.appendChild(link);
+  } else {
+    // URL未設定（meisei）
+    wrapper.textContent = name;
+  }
+
+  app.appendChild(wrapper);
+});
 
   const resetBtn = document.createElement("button");
   resetBtn.textContent = "↺ 最初に戻る";
