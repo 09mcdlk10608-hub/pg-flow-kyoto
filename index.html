@@ -1,307 +1,280 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PG指名フローチャート（京都店）</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VG診断</title>
 
 <style>
 body {
-  font-family: system-ui, -apple-system,
-    "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo", sans-serif;
-  margin: 0;
-  background: #fff;
-  color: #222;
+  font-family: sans-serif;
+  text-align: center;
+  padding: 16px;
+  line-height: 1.5;
 }
-.wrap {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 24px 16px 40px;
-}
-h1 { font-size: 22px; margin-bottom: 6px; }
-.sub { font-size: 14px; color:#666; margin-bottom: 16px; }
 
-.card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
+h2 {
+  margin: 10px 0;
+  font-size: 20px;
 }
-.hidden { display:none; }
 
-.question { font-size: 18px; margin-bottom: 16px; }
-.choices {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.catch {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #666;
 }
-.choice {
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  background: #fafafa;
+
+button {
+  display: block;
+  margin: 8px auto;
+  padding: 12px;
+  font-size: 14px;
+  width: 90%;
+  max-width: 300px;
+}
+
+.reset-btn {
+  margin-top: 20px;
+  background: none;
+  color: #555;
+  border: none;
+  width: auto;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.top-btn {
+  margin-top: 30px;
+  background: #555;
+  color: #fff;
+  border: none;
+  width: auto;
+  padding: 10px 16px;
+  display: inline-block;
+}
+
+.toggle {
+  margin: 20px 0 10px;
+  font-weight: bold;
   cursor: pointer;
 }
 
-.result-title { font-size: 20px; margin-bottom: 6px; }
-.result-sub { font-size: 14px; color:#666; margin-bottom: 12px; }
-
-.recommend { margin: 12px 0 16px; }
-.recommend-toggle {
-  background:none;
-  border:none;
-  font-size:14px;
-  color:#555;
-  cursor:pointer;
-}
-.recommend-toggle:hover { text-decoration: underline; }
-.recommend-body {
-  font-size:14px;
-  line-height:1.7;
-  margin-top:8px;
+.hidden {
+  display: none;
 }
 
-.pg-list { display:grid; gap:12px; }
-.pg {
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:14px;
-}
-.pg-name {
-  font-weight:bold;
-  margin-bottom:6px;
-}
-.pg-name a {
-  color:#222;
-  text-decoration: underline;
-}
-.tags {
-  font-size:13px;
-  color:#666;
-}
-.tags span {
-  margin-right:6px;
-  cursor:default;
-  pointer-events: none;
+.member {
+  margin: 4px 0;
 }
 
-.back-top {
-  margin-top:20px;
-  text-align:center;
+#detail p {
+  margin: 0;
 }
-.restart-btn {
-  background:none;
-  border:none;
-  font-size:14px;
-  color:#555;
-  cursor:pointer;
-}
-.restart-btn:hover { text-decoration: underline; }
 
-footer {
-  margin-top:32px;
-  font-size:12px;
-  color:#777;
-  text-align:center;
+#detail {
+  font-size: 14px;
 }
 </style>
 </head>
 
 <body>
-<div class="wrap">
-  <h1>PG指名フローチャート（京都店）</h1>
-  <div class="sub">5つの質問で、あなたに合うPGをご提案します</div>
 
-  <div id="card" class="card"></div>
-  <div id="result" class="hidden"></div>
-
-  <footer>
-    ※最終の結果画面から公式サイトの作品ページへ遷移します
-  </footer>
-</div>
+<div id="app"></div>
 
 <script>
-const card = document.getElementById("card");
-const result = document.getElementById("result");
+// ===== 質問 =====
+const questions = [
+  {
+    q: "映像の軸はどちらが近い？",
+    a: [
+      { text: "感動・ストーリー性", next: 1 },
+      { text: "楽しさ・雰囲気", next: 2 }
+    ]
+  },
+  {
+    q: "どんなテイストにしたい？",
+    a: [
+      { text: "シネマティック・エモい", next: 3 },
+      { text: "ナチュラル・明るい", next: 4 }
+    ]
+  },
+  {
+    q: "どんなVGがいい？",
+    a: [
+      { text: "落ち着いて見守る", next: 3 },
+      { text: "一緒に楽しむ", next: 4 }
+    ]
+  },
+  {
+    q: "映像へのこだわりは？",
+    a: [
+      { text: "しっかり作り込む", result: ["A","B"] },
+      { text: "自然さも大切", result: ["C","D"] }
+    ]
+  },
+  {
+    q: "理想の過ごし方は？",
+    a: [
+      { text: "ゆったり", result: ["A","C"] },
+      { text: "ワイワイ", result: ["B","D"] }
+    ]
+  }
+];
 
-/* ===== 結果データ ===== */
+// ===== 結果 =====
 const results = {
-  A:{
-    title:"ゲストみんなとの一体感",
-    sub:"笑顔と空気感を大切に、一緒に場を楽しむPGタイプ",
-    recommend:"みんなとの時間が何より大事な方へ。",
-    photographers:[
-      {name:"Kenji", url:"https://www.la-viephoto.com/photo_g/kenji", tags:["#アーティスティック","#モード","#フレンドリー","#ハートフル"]},
-      {name:"yumico", url:"https://www.la-viephoto.com/photo_g/yumico", tags:["#ハッピー","#ドキュメンタリー","#フレンドリー","#アットホーム"]},
-      {name:"HARUKI", url:"https://www.la-viephoto.com/photo_g/haruki", tags:["#しっとり","#フレンドリー","#大人っぽさ","#アットホーム"]},
-      {name:"Hibino", url:"https://www.la-viephoto.com/photo_g/hibino", tags:["#ハートフル","#おしゃれ","#ハッピー","#エモーショナル"]}
-    ]
+  A: {
+    title: "シネマティック没入型",
+    catch: "― 映画のような世界観に浸りたいあなたへ ―",
+    text: "映像の流れや演出を大切にしたい。<br>落ち着いた空気で作品として残したい方。",
+    members: ["takeki","hissan","Tokky","kose"]
   },
-  B:{
-    title:"自然体なふたりらしさを重視",
-    sub:"無理せず、いつもの自分たちで過ごせるPGタイプ",
-    recommend:"リラックスして撮影したい方へ。",
-    photographers:[
-      {name:"akane", url:"https://www.la-viephoto.com/photo_g/akane", tags:["#自然体","#いつものふたり","#笑顔","#安心感"]},
-      {name:"unio", url:"https://www.la-viephoto.com/photo_g/unio", tags:["#王道","#ナチュラル","#ポージング","#フレンドリー"]},
-      {name:"Kacchan", url:"https://www.la-viephoto.com/photo_g/Kacchan", tags:["#温かさ","#空気感","#ふたりらしさ","#寄り添う"]},
-      {name:"tsukasa", url:"https://www.la-viephoto.com/photo_g/tsukasa", tags:["#フレンドリー","#ポージング","#シャープ","#鮮やかさ"]}
-    ]
+  B: {
+    title: "ナチュラルストーリー型",
+    catch: "― 自然な感情と楽しさをそのまま残したいあなたへ ―",
+    text: "自然な一日を残したい。<br>明るさと感動を大切にしたい方。",
+    members: ["kazuma","anri"]
   },
-  C:{
-    title:"独自の世界観に導いてくれる",
-    sub:"特別な一日を“作品”として残したいあなたへ",
-    recommend:"世界観や演出を楽しみたい方へ。",
-    photographers:[
-      {name:"shinomiya", url:"https://www.la-viephoto.com/photo_g/shinomiya", tags:["#エモーショナル","#おしゃれ","#空気感","#しっとり"]},
-      {name:"TAIHEI", url:"https://www.la-viephoto.com/photo_g/taihei", tags:["#モード","#シック","#大人っぽい","#非日常"]},
-      {name:"naoya", url:"https://www.la-viephoto.com/photo_g/naoya-sugimoto", tags:["#大人っぽい","#しっとり","#美しさ","#フレンドリー"]},
-      {name:"toro", url:"https://www.la-viephoto.com/photo_g/toro", tags:["#きれいめ","#ポージング","#繊細な光","#親しみやすさ"]}
-    ]
+  C: {
+    title: "ドキュメンタリー空気型",
+    catch: "― 当日の空気感をありのまま残したいあなたへ ―",
+    text: "その場の雰囲気を自然に残したい。<br>思い出をそのまま残したい方。",
+    members: ["Ryo","tamo","zono","kira"]
   },
-  D:{
-    title:"寄り添い、安心感で包み込む",
-    sub:"穏やかに過ごしたいあなたへ",
-    recommend:"丁寧に寄り添ってほしい方へ。",
-    photographers:[
-      {name:"TATSUYA", url:"https://www.la-viephoto.com/photo_g/tatsuya", tags:["#穏やか","#ポージング","#透明感","#安心感"]},
-      {name:"KIZ", url:"https://www.la-viephoto.com/photo_g/kiz", tags:["#作品性","#美しい構図","#落ち着く","#安心感"]},
-      {name:"imani", url:"https://www.la-viephoto.com/photo_g/imani", tags:["#やわらかさ","#あたたかさ","#ふんわり","#穏やか"]}
-    ]
+  D: {
+    title: "エンタメ盛り上げ型",
+    catch: "― みんなで楽しむ一日を全力で残したいあなたへ ―",
+    text: "楽しい空気や一体感を残したい。<br>盛り上がり重視で記録したい方。",
+    members: ["naoki","meisei"]
   }
 };
 
-/* ===== 質問表示 ===== */
-function showQuestion(text,aText,bText,onA,onB,showBack){
-  card.classList.remove("hidden");
-  result.classList.add("hidden");
+// ===== URL =====
+const urlMap = {
+  "takeki": "https://www.la-viephoto.com/photo_g/takeki-vg",
+  "hissan": "https://www.la-viephoto.com/photo_g/hissan-vg",
+  "Tokky": "https://www.la-viephoto.com/photo_g/tokky-vg",
+  "kose": "https://www.la-viephoto.com/photo_g/kose",
+  "kazuma": "https://www.la-viephoto.com/photo_g/kazuma-vg",
+  "anri": "https://www.la-viephoto.com/photo_g/anri",
+  "Ryo": "https://www.la-viephoto.com/photo_g/ryo-vg",
+  "tamo": "https://www.la-viephoto.com/photo_g/tamo-vg",
+  "zono": "https://www.la-viephoto.com/photo_g/zono-vg",
+  "kira": "https://www.la-viephoto.com/photo_g/kira",
+  "naoki": "https://www.la-viephoto.com/photo_g/naoki",
+  "meisei": ""
+};
 
-  card.innerHTML = `
-    <div class="question">${text}</div>
-    <div class="choices">
-      <button class="choice" id="btnA">${aText}</button>
-      <button class="choice" id="btnB">${bText}</button>
-    </div>
-    ${showBack ? `<div class="back-top"><button class="restart-btn">↺ 質問の最初に戻る</button></div>` : ``}
-  `;
+let answers = [];
 
-  document.getElementById("btnA").onclick = onA;
-  document.getElementById("btnB").onclick = onB;
+// ===== 質問表示 =====
+function showQuestion(i) {
+  const app = document.getElementById("app");
+  const q = questions[i];
 
-  if (showBack) {
-    card.querySelector(".restart-btn").onclick = q1;
+  app.innerHTML = "<h2>" + q.q + "</h2>";
+
+  q.a.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.textContent = choice.text;
+
+    btn.onclick = function() {
+      if (choice.next !== undefined) {
+        showQuestion(choice.next);
+      } else {
+        answers = [choice.result]; // ✅ ここ重要（1回で確定）
+        showResult();
+      }
+    };
+
+    app.appendChild(btn);
+  });
+
+  const resetBtn = document.createElement("button");
+  resetBtn.textContent = "↺ 最初に戻る";
+  resetBtn.className = "reset-btn";
+  resetBtn.onclick = function() {
+    showQuestion(0);
+  };
+  app.appendChild(resetBtn);
+
+  if (i === 0) {
+    const topBtn = document.createElement("button");
+    topBtn.textContent = "← PG / VG選択に戻る";
+    topBtn.className = "top-btn";
+    topBtn.onclick = function() {
+      location.href = "../select/";
+    };
+    app.appendChild(topBtn);
   }
 }
 
-/* ===== 結果表示（DOM生成） ===== */
-function showResult(key){
-  card.classList.add("hidden");
-  const r = results[key];
+// ===== 結果表示 =====
+function showResult() {
+  const list = answers[0];
 
-  result.innerHTML = `
-    <div class="card">
-      <div class="result-title">${r.title}</div>
-      <div class="result-sub">${r.sub}</div>
+  // ランダムではなく先頭要素固定 → 安定表示
+  const final = list[0];
 
-      <div class="recommend">
-        <button class="recommend-toggle">▷ こんなあなたにおすすめ（←ここをタップ）</button>
-        <div class="recommend-body hidden">${r.recommend}</div>
-      </div>
+  const data = results[final];
+  const app = document.getElementById("app");
 
-      <div class="pg-list"></div>
+  app.innerHTML =
+    "<h2>" + data.title + "</h2>" +
+    "<div class='catch'>" + data.catch + "</div>" +
+    "<div class='toggle' onclick='toggleText()'>▷ こんなあなたにおすすめ（←ここをタップ）</div>" +
+    "<div id='detail' class='hidden'><p>" + data.text + "</p></div>" +
+    "<h3>おすすめVG</h3>";
 
-      <div class="back-top">
-        <button class="restart-btn">↺ 質問の最初に戻る</button>
-      </div>
-    </div>
-  `;
-  result.classList.remove("hidden");
+  data.members.forEach(name => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "member";
 
-  const list = result.querySelector(".pg-list");
+    if (urlMap[name]) {
+      const link = document.createElement("a");
+      link.textContent = name;
+      link.href = urlMap[name];
+      link.target = "_blank";
+      wrapper.appendChild(link);
+    } else {
+      wrapper.textContent = name;
+    }
 
-  r.photographers.forEach(p=>{
-    const pg = document.createElement("div");
-    pg.className = "pg";
-
-    const name = document.createElement("div");
-    name.className = "pg-name";
-    const link = document.createElement("a");
-    link.href = p.url;
-    link.target = "_blank";
-    link.textContent = p.name;
-    name.appendChild(link);
-
-    const tags = document.createElement("div");
-    tags.className = "tags";
-    p.tags.forEach(t=>{
-      const span = document.createElement("span");
-      span.textContent = t;
-      tags.appendChild(span);
-    });
-
-    pg.appendChild(name);
-    pg.appendChild(tags);
-    list.appendChild(pg);
+    app.appendChild(wrapper);
   });
 
-  const toggle = result.querySelector(".recommend-toggle");
-  toggle.onclick = ()=>{
-    const body = result.querySelector(".recommend-body");
-    body.classList.toggle("hidden");
-    toggle.textContent = body.classList.contains("hidden")
-      ? "▷ こんなあなたにおすすめ（←ここをタップ）"
-      : "▼ こんなあなたにおすすめ（←閉じる）";
+  const resetBtn = document.createElement("button");
+  resetBtn.textContent = "↺ 最初に戻る";
+  resetBtn.className = "reset-btn";
+  resetBtn.onclick = function() {
+    showQuestion(0);
   };
+  app.appendChild(resetBtn);
 
-  result.querySelector(".restart-btn").onclick = q1;
-}
-
-/* ===== 質問定義 ===== */
-function q1(){
-  showQuestion(
-    "写真を見返した時、大切にしたいのは？",
-    "感情／温かさ／物語",
-    "おしゃれ／世界観／美しさ",
-    q2,q3,false
-  );
-}
-function q2(){
-  showQuestion(
-    "結婚式で大切なポイントは？",
-    "ゲストとの時間や空気感",
-    "ありのまま、自然体なふたりらしさ",
-    q4,q4,true
-  );
-}
-function q3(){
-  showQuestion(
-    "どんなフォトグラファーと過ごしたい？",
-    "独自の世界観でふたりを導いてくれる",
-    "落ち着いた、寄り添ってくれる",
-    q5,q5,true
-  );
-}
-function q4(){
-  showQuestion(
-    "写真の雰囲気の好みは？",
-    "にぎやか・笑顔・ドキュメンタリー",
-    "やわらかさ・自然・空気感",
-    ()=>showResult("A"),
-    ()=>showResult("B"),
-    true
-  );
-}
-function q5(){
-  showQuestion(
-    "写真の仕上がりの好みは？",
-    "ドラマチック・印象的",
-    "シンプル・上品・落ち着いた",
-    ()=>showResult("C"),
-    ()=>showResult("D"),
-    true
-  );
+  const topBtn = document.createElement("button");
+  topBtn.textContent = "← PG / VG選択に戻る";
+  topBtn.className = "top-btn";
+  topBtn.onclick = function() {
+    location.href = "../select/";
+  };
+  app.appendChild(topBtn);
 }
 
-window.onload = q1;
+// ===== トグル =====
+function toggleText() {
+  const el = document.getElementById("detail");
+  const toggle = document.querySelector(".toggle");
+
+  if (el.classList.contains("hidden")) {
+    el.classList.remove("hidden");
+    toggle.textContent = "▼ こんなあなたにおすすめ（←閉じる）";
+  } else {
+    el.classList.add("hidden");
+    toggle.textContent = "▷ こんなあなたにおすすめ（←ここをタップ）";
+  }
+}
+
+showQuestion(0);
 </script>
 
 </body>
