@@ -24,7 +24,6 @@ h2 {
   color: #666;
 }
 
-/* 通常ボタン */
 button {
   display: block;
   margin: 8px auto;
@@ -34,7 +33,6 @@ button {
   max-width: 300px;
 }
 
-/* 最初に戻る */
 .reset-btn {
   margin-top: 20px;
   background: none;
@@ -45,7 +43,6 @@ button {
   text-decoration: underline;
 }
 
-/* PG/VG選択に戻る */
 .top-btn {
   margin-top: 30px;
   background: #555;
@@ -56,7 +53,6 @@ button {
   display: inline-block;
 }
 
-/* トグル */
 .toggle {
   margin: 20px 0 10px;
   font-weight: bold;
@@ -86,6 +82,7 @@ button {
 <div id="app"></div>
 
 <script>
+// ===== 質問 =====
 const questions = [
   {
     q: "映像の軸はどちらが近い？",
@@ -124,7 +121,7 @@ const questions = [
   }
 ];
 
-// 結果データ
+// ===== 結果 =====
 const results = {
   A: {
     title: "シネマティック没入型",
@@ -152,7 +149,7 @@ const results = {
   }
 };
 
-// URLマップ
+// ===== URL =====
 const urlMap = {
   "takeki": "https://www.la-viephoto.com/photo_g/takeki-vg",
   "hissan": "https://www.la-viephoto.com/photo_g/hissan-vg",
@@ -170,7 +167,7 @@ const urlMap = {
 
 let answers = [];
 
-// 質問表示
+// ===== 質問表示 =====
 function showQuestion(i) {
   const app = document.getElementById("app");
   const q = questions[i];
@@ -185,10 +182,8 @@ function showQuestion(i) {
       if (choice.next !== undefined) {
         showQuestion(choice.next);
       } else {
-        answers.push(choice.result);
-        if (answers.length === 2) {
-          showResult();
-        }
+        answers = [choice.result]; // ✅ ここ重要（1回で確定）
+        showResult();
       }
     };
 
@@ -199,7 +194,6 @@ function showQuestion(i) {
   resetBtn.textContent = "↺ 最初に戻る";
   resetBtn.className = "reset-btn";
   resetBtn.onclick = function() {
-    answers = [];
     showQuestion(0);
   };
   app.appendChild(resetBtn);
@@ -215,14 +209,14 @@ function showQuestion(i) {
   }
 }
 
-// 結果表示
+// ===== 結果表示 =====
 function showResult() {
-  const list1 = answers[0];
-  const list2 = answers[1];
+  const list = answers[0];
 
-  const final = list1.find(x => list2.includes(x));
+  // ランダムではなく先頭要素固定 → 安定表示
+  const final = list[0];
+
   const data = results[final];
-
   const app = document.getElementById("app");
 
   app.innerHTML =
@@ -253,7 +247,6 @@ function showResult() {
   resetBtn.textContent = "↺ 最初に戻る";
   resetBtn.className = "reset-btn";
   resetBtn.onclick = function() {
-    answers = [];
     showQuestion(0);
   };
   app.appendChild(resetBtn);
@@ -267,7 +260,7 @@ function showResult() {
   app.appendChild(topBtn);
 }
 
-// トグル
+// ===== トグル =====
 function toggleText() {
   const el = document.getElementById("detail");
   const toggle = document.querySelector(".toggle");
@@ -281,7 +274,6 @@ function toggleText() {
   }
 }
 
-// 初期表示
 showQuestion(0);
 </script>
 
