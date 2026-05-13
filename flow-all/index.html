@@ -6,40 +6,43 @@
 <title>VG診断</title>
 
 <style>
-body{
-  font-family:sans-serif;
-  text-align:center;
-  padding:16px;
+body {
+  font-family: sans-serif;
+  text-align: center;
+  padding: 16px;
 }
 
-button{
-  display:block;
-  margin:8px auto;
-  padding:12px;
-  width:90%;
-  max-width:300px;
+h2 {
+  margin: 12px 0;
 }
 
-/* リセット */
-.reset-btn{
-  background:none;
-  border:none;
-  color:#555;
-  text-decoration:underline;
+button {
+  display: block;
+  margin: 8px auto;
+  padding: 14px;
+  width: 90%;
+  max-width: 320px;
+  font-size: 14px;
 }
 
-/* TOP戻る */
-.top-btn{
-  margin-top:20px;
-  background:#555;
-  color:#fff;
-  border:none;
-  padding:10px 16px;
-  width:auto;
+/* 補助ボタン */
+.reset-btn {
+  background: none;
+  border: none;
+  color: #555;
+  text-decoration: underline;
+  margin-top: 20px;
 }
 
-/* トグル */
-.hidden{display:none;}
+.top-btn {
+  background: #555;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  width: auto;
+  display: inline-block;
+  margin-top: 30px;
+}
 </style>
 </head>
 
@@ -49,148 +52,192 @@ button{
 
 <script>
 
-let base=null;
+// ===== 質問データ（新構造） =====
+const questions = [
 
-// ===== 質問 =====
-const questions=[
+  // Q1
+  {
+    q: "映像の軸はどちらが近い？",
+    a: [
+      { text: "感動・ストーリー性", next: 1 },
+      { text: "楽しさ・雰囲気", next: 2 }
+    ]
+  },
 
-{q:"映像の軸はどちらが近い？",
- a:[
-  {text:"感動・ストーリー性",next:1},
-  {text:"楽しさ・雰囲気",next:2}
- ]},
+  // Q2
+  {
+    q: "どんなテイストにしたい？",
+    a: [
+      { text: "シネマティック・エモい", next: 3 },
+      { text: "ナチュラル・明るい", next: 4 }
+    ]
+  },
 
-{q:"どんなテイストにしたい？",
- a:[
-  {text:"シネマティック",next:3,set:"A"},
-  {text:"ナチュラル",next:4,set:"C"}
- ]},
+  // Q3
+  {
+    q: "どんなVGがいい？",
+    a: [
+      { text: "落ち着いて見守る", next: 3 },
+      { text: "一緒に楽しむ", next: 4 }
+    ]
+  },
 
-{q:"どんなVGがいい？",
- a:[
-  {text:"落ち着いて見守る",next:3,set:"A"},
-  {text:"一緒に楽しむ",next:4,set:"B"}
- ]},
+  // Q4 → Q6/Q7
+  {
+    q: "映像へのこだわりは？",
+    a: [
+      { text: "世界観や演出をしっかり作り込みたい", next: 5 },
+      { text: "自然さも残しつつ綺麗にまとめたい", next: 6 }
+    ]
+  },
 
-// ===== Q4 =====
-{q:"映像へのこだわりは？",
- a:[
-  {text:"しっかり作り込む",result:"Q4A"},
-  {text:"自然さも大切",result:"Q4B"}
- ]},
+  // Q5 → Q8/Q9
+  {
+    q: "当日の過ごし方の理想は？",
+    a: [
+      { text: "落ち着いた空気でゆったり過ごしたい", next: 7 },
+      { text: "みんなで楽しくワイワイ過ごしたい", next: 8 }
+    ]
+  },
 
-// ===== Q5 =====
-{q:"理想の過ごし方は？",
- a:[
-  {text:"ゆったり",result:"Q5A"},
-  {text:"ワイワイ",result:"Q5B"}
- ]}
+  // ===== Q6 =====
+  {
+    q: "どちらの型がお好み？",
+    a: [
+      { text: "シネマティック没入型", result: "A" },
+      { text: "ナチュラルストーリー型", result: "B" }
+    ]
+  },
+
+  // ===== Q7 =====
+  {
+    q: "どちらの型がお好み？",
+    a: [
+      { text: "ドキュメンタリー空気型", result: "C" },
+      { text: "エンタメ盛り上げ型", result: "D" }
+    ]
+  },
+
+  // ===== Q8 =====
+  {
+    q: "どちらの型がお好み？",
+    a: [
+      { text: "シネマティック没入型", result: "A" },
+      { text: "ドキュメンタリー空気型", result: "C" }
+    ]
+  },
+
+  // ===== Q9 =====
+  {
+    q: "どちらの型がお好み？",
+    a: [
+      { text: "ナチュラルストーリー型", result: "B" },
+      { text: "エンタメ盛り上げ型", result: "D" }
+    ]
+  }
 ];
 
 // ===== 結果 =====
-const results={
-A:{title:"シネマティック没入型",members:["takeki","hissan","Tokky","kose"]},
-B:{title:"ナチュラルストーリー型",members:["kazuma","anri"]},
-C:{title:"ドキュメンタリー空気型",members:["Ryo","tamo","zono","kira"]},
-D:{title:"エンタメ盛り上げ型",members:["naoki","meisei"]}
+const results = {
+  A:{title:"シネマティック没入型",members:["takeki","hissan","Tokky","kose"]},
+  B:{title:"ナチュラルストーリー型",members:["kazuma","anri"]},
+  C:{title:"ドキュメンタリー空気型",members:["Ryo","tamo","zono","kira"]},
+  D:{title:"エンタメ盛り上げ型",members:["naoki","meisei"]}
+};
+
+// ===== URL =====
+const urlMap = {
+  "takeki":"https://www.la-viephoto.com/photo_g/takeki-vg",
+  "hissan":"https://www.la-viephoto.com/photo_g/hissan-vg",
+  "Tokky":"https://www.la-viephoto.com/photo_g/tokky-vg",
+  "kose":"https://www.la-viephoto.com/photo_g/kose",
+  "kazuma":"https://www.la-viephoto.com/photo_g/kazuma-vg",
+  "anri":"https://www.la-viephoto.com/photo_g/anri",
+  "Ryo":"https://www.la-viephoto.com/photo_g/ryo-vg",
+  "tamo":"https://www.la-viephoto.com/photo_g/tamo-vg",
+  "zono":"https://www.la-viephoto.com/photo_g/zono-vg",
+  "kira":"https://www.la-viephoto.com/photo_g/kira",
+  "naoki":"https://www.la-viephoto.com/photo_g/naoki",
+  "meisei":""
 };
 
 // ===== 表示 =====
 function showQuestion(i){
+  const app=document.getElementById("app");
+  const q=questions[i];
 
-const app=document.getElementById("app");
-const q=questions[i];
+  app.innerHTML="<h2>"+q.q+"</h2>";
 
-app.innerHTML="<h2>"+q.q+"</h2>";
+  q.a.forEach(choice=>{
+    const btn=document.createElement("button");
+    btn.textContent=choice.text;
 
-q.a.forEach(choice=>{
-const btn=document.createElement("button");
-btn.textContent=choice.text;
+    btn.onclick=()=>{
+      if(choice.next!==undefined){
+        showQuestion(choice.next);
+      }else{
+        showResult(choice.result);
+      }
+    };
 
-btn.onclick=()=>{
+    app.appendChild(btn);
+  });
 
-if(choice.set){base=choice.set;}
+  const reset=document.createElement("button");
+  reset.textContent="↺ 最初に戻る";
+  reset.className="reset-btn";
+  reset.onclick=()=>location.reload();
+  app.appendChild(reset);
 
-if(choice.next!==undefined){
-showQuestion(choice.next);
-}else{
-decide(choice.result);
+  if(i===0){
+    const top=document.createElement("button");
+    top.textContent="← PG / VG選択に戻る";
+    top.className="top-btn";
+    top.onclick=()=>location.href="../select/";
+    app.appendChild(top);
+  }
 }
 
-};
-
-app.appendChild(btn);
-});
-
-// 戻る
-const reset=document.createElement("button");
-reset.textContent="↺ 最初に戻る";
-reset.className="reset-btn";
-reset.onclick=()=>location.reload();
-app.appendChild(reset);
-
-if(i===0){
-const top=document.createElement("button");
-top.textContent="← PG / VG選択に戻る";
-top.className="top-btn";
-top.onclick=()=>location.href="../select/";
-app.appendChild(top);
-}
-
-}
-
-// ===== 判定 =====
-function decide(type){
-
-let final;
-
-if(type==="Q4A"){
-final = (base==="A") ? "A" : "B";
-}
-
-if(type==="Q4B"){
-final = (base==="C") ? "C" : "D";
-}
-
-if(type==="Q5A"){
-final = (base==="A") ? "A" : "C";
-}
-
-if(type==="Q5B"){
-final = (base==="B") ? "B" : "D";
-}
-
-showResult(final);
-}
-
-// ===== 結果 =====
+// ===== 結果表示 =====
 function showResult(key){
+  const app=document.getElementById("app");
+  const data=results[key];
 
-const app=document.getElementById("app");
-const data=results[key];
+  app.innerHTML="<h2>"+data.title+"</h2>";
 
-app.innerHTML="<h2>"+data.title+"</h2>";
+  data.members.forEach(name=>{
+    const div=document.createElement("div");
 
-data.members.forEach(n=>{
-const d=document.createElement("div");
-d.textContent=n;
-app.appendChild(d);
-});
+    if(urlMap[name]){
+      const a=document.createElement("a");
+      a.textContent=name;
+      a.href=urlMap[name];
+      a.target="_blank";
+      div.appendChild(a);
+    }else{
+      div.textContent=name;
+    }
 
-const reset=document.createElement("button");
-reset.textContent="↺ 最初に戻る";
-reset.onclick=()=>location.reload();
-app.appendChild(reset);
+    app.appendChild(div);
+  });
 
-const top=document.createElement("button");
-top.textContent="← PG / VG選択に戻る";
-top.className="top-btn";
-top.onclick=()=>location.href="../select/";
-app.appendChild(top);
+  const reset=document.createElement("button");
+  reset.textContent="↺ 最初に戻る";
+  reset.className="reset-btn";
+  reset.onclick=()=>location.reload();
+  app.appendChild(reset);
+
+  const top=document.createElement("button");
+  top.textContent="← PG / VG選択に戻る";
+  top.className="top-btn";
+  top.onclick=()=>location.href="../select/";
+  app.appendChild(top);
 }
 
+// 初期表示
 showQuestion(0);
 
 </script>
+
 </body>
 </html>
