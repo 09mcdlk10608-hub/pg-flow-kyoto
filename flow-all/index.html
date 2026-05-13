@@ -24,7 +24,6 @@ h2 {
   color: #666;
 }
 
-/* 選択ボタン */
 button {
   display: block;
   margin: 8px auto;
@@ -34,7 +33,6 @@ button {
   max-width: 300px;
 }
 
-/* 最初に戻る */
 .reset-btn {
   margin-top: 20px;
   background: none;
@@ -45,7 +43,6 @@ button {
   text-decoration: underline;
 }
 
-/* PG/VG戻る */
 .top-btn {
   margin-top: 30px;
   background: #555;
@@ -56,7 +53,6 @@ button {
   display: inline-block;
 }
 
-/* トグル */
 .toggle {
   margin: 20px 0 10px;
   font-weight: bold;
@@ -87,9 +83,9 @@ button {
 
 <script>
 
-// ===== 状態管理 =====
-let baseType = null;  // A/B/C/Dの軸
-let routeType = null; // Q4 or Q5の選択
+// ===== 状態保持 =====
+let q4Answer = null;
+let q5Answer = null;
 
 // ===== 質問 =====
 const questions = [
@@ -103,29 +99,29 @@ const questions = [
   {
     q: "どんなテイストにしたい？",
     a: [
-      { text: "シネマティック・エモい", next: 3, set: "A" },
-      { text: "ナチュラル・明るい", next: 4, set: "C" }
+      { text: "シネマティック・エモい", next: 3 },
+      { text: "ナチュラル・明るい", next: 4 }
     ]
   },
   {
     q: "どんなVGがいい？",
     a: [
-      { text: "落ち着いて見守る", next: 3, set: "A" },
-      { text: "一緒に楽しむ", next: 4, set: "B" }
+      { text: "落ち着いて見守る", next: 3 },
+      { text: "一緒に楽しむ", next: 4 }
     ]
   },
   {
     q: "映像へのこだわりは？",
     a: [
-      { text: "世界観や演出をしっかり作り込みたい", resultType: "Q4A" },
-      { text: "自然さも残しつつ綺麗にまとめたい", resultType: "Q4B" }
+      { text: "世界観や演出をしっかり作り込みたい", nextResult: ["A","B"], step: "Q4" },
+      { text: "自然さも残しつつ綺麗にまとめたい", nextResult: ["C","D"], step: "Q4" }
     ]
   },
   {
     q: "当日の過ごし方の理想は？",
     a: [
-      { text: "落ち着いた空気でゆったり過ごしたい", resultType: "Q5A" },
-      { text: "みんなで楽しくワイワイ過ごしたい", resultType: "Q5B" }
+      { text: "落ち着いた空気でゆったり過ごしたい", nextResult: ["A","C"], step: "Q5" },
+      { text: "みんなで楽しくワイワイ過ごしたい", nextResult: ["B","D"], step: "Q5" }
     ]
   }
 ];
@@ -167,26 +163,45 @@ function showQuestion(i){
 
     btn.onclick=function(){
 
-      if(choice.set){
-        baseType=choice.set;
-      }
-
+      // 通常遷移
       if(choice.next!==undefined){
         showQuestion(choice.next);
-      }else{
-        showResult(choice.resultType);
+        return;
+      }
+
+      // Q4/Q5処理
+      if(choice.step==="Q4"){
+        q4Answer = choice.nextResult;
+      }
+
+      if(choice.step==="Q5"){
+        q5Answer = choice.nextResult;
+      }
+
+      // 結果決定（どちらでも到達可能）
+      if(q4Answer && q5Answer){
+        const final = q4Answer.find(x=>q5Answer.includes(x));
+        renderResult(final);
+      }
+      else if(!q4Answer){
+        q4Answer = choice.nextResult;
+      }
+      else{
+        q5Answer = choice.nextResult;
       }
     };
 
     app.appendChild(btn);
   });
 
+  // リセット
   const reset=document.createElement("button");
   reset.textContent="↺ 最初に戻る";
   reset.className="reset-btn";
   reset.onclick=()=>location.reload();
   app.appendChild(reset);
 
+  // TOP戻る
   if(i===0){
     const top=document.createElement("button");
     top.textContent="← PG / VG選択に戻る";
@@ -196,30 +211,7 @@ function showQuestion(i){
   }
 }
 
-// ===== 結果ロジック =====
-function showResult(type){
-  let final;
-
-  if(type==="Q4A"){ // 作り込み
-    final = baseType==="A" ? "A" : "B";
-  }
-
-  if(type==="Q4B"){ // 自然
-    final = baseType==="C" ? "C" : "D";
-  }
-
-  if(type==="Q5A"){ // ゆったり
-    final = baseType==="A" ? "A" : "C";
-  }
-
-  if(type==="Q5B"){ // ワイワイ
-    final = baseType==="B" ? "B" : "D";
-  }
-
-  renderResult(final);
-}
-
-// ===== 表示 =====
+// ===== 結果表示 =====
 function renderResult(key){
   const data=results[key];
   const app=document.getElementById("app");
@@ -267,7 +259,9 @@ function toggleText(){
   el.classList.toggle("hidden");
 }
 
+// 初期表示
 showQuestion(0);
+
 </script>
 
 </body>
